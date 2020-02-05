@@ -1,0 +1,13 @@
+name = "MolHandler"
+uuid = "50fc6b0e-c9f1-4327-9b2e-2c1c555c7c24"
+authors = ["Yutaka Murata"]
+version = "0.1.0"
+
+[compat]
+julia = "1.2"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
