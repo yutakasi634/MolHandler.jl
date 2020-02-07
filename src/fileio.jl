@@ -1,4 +1,7 @@
 function readdcd(filename::String)
+
+    coordinates_time_series = Matrix{Atom}(undef, 0, 0)
+
     open(filename, "r") do io
         # read header first block
         skip(io, 4) # skip block size part
@@ -47,6 +50,7 @@ function readdcd(filename::String)
         skip(io, 4) # skip block size part
 #       println("number_of_atom ", number_of_atom)
 
+        # read body block
         coordinates_time_series = Matrix{Atom}(undef, number_of_atom, total_frame)
         for frame_idx in 1:total_frame
             # read x coordinates
@@ -58,16 +62,18 @@ function readdcd(filename::String)
             # read y coorinates
             skip(io, 4) # skip block size part
             y_coords = Array{Float32, 1}(undef, number_of_atom)
+            read!(io, y_coords)
             skip(io, 4) # skip block size part
 
             # read z coordinates
             skip(io, 4) # skip block size part
             z_coords = Array{Float32, 1}(undef ,number_of_atom)
+            read!(io, z_coords)
             skip(io, 4) # skip block size part
 
             atoms = map(xyz -> Atom(xyz), eachrow(hcat(x_coords, y_coords, z_coords)))
-            all_coordinates[:, frame_idx] = atoms
+            coordinates_time_series[:, frame_idx] = atoms
         end
-        Trajectory(trj)
     end
+    Trajectory(coordinates_time_series)
 end
