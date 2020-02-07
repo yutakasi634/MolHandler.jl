@@ -21,14 +21,6 @@ function readdcd(filename::String)
         read!(io, header_null_9)
         version   = read(io, Int32)
         skip(io, 4) # skip block size part
-#        println("header sig ", header_sig)
-#        println("total frame ", total_frame)
-#        println("first step ", first_step)
-#        println("nstep save ", nstep_save)
-#        println("total step ", total_step)
-#        println("total unit ", total_unit)
-#        println("time_step ", time_step)
-#        println("version ", version)
 
         # read header second block
         skip(io, 4)
@@ -42,13 +34,11 @@ function readdcd(filename::String)
             push!(title, String(line))
         end
         skip(io, 4) # skip block size part
-#        println("title \n", title)
 
         # read header third block
         skip(io, 4) # skip block size part
         number_of_atom     = read(io, Int32)
         skip(io, 4) # skip block size part
-#       println("number_of_atom ", number_of_atom)
 
         # read body block
         coordinates_time_series = Matrix{Atom}(undef, number_of_atom, total_frame)
