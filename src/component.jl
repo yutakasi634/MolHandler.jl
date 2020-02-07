@@ -1,12 +1,8 @@
 struct Atom
 
     coordinate::Vector{Float64} # [x, y, z]
-    resname::String
-    resid::Int64
-    atomname::String
-    atomid::Int64
-    mass::Float64
 
+    Atom()           = new()
     Atom(coordinate) = new(coordinate)
 end
 
@@ -20,6 +16,11 @@ struct Trajectory
     #   c f i l ]
     # In this case, one snapshot correspond to [a b c]
     nframe::Int64
+    resname::Vector{String}
+    resid::Vector{Int64}
+    atomname::Vector{String}
+    atomid::Vector{Int64}
+    mass::Vector{Float64}
 
     Trajectory(coordinates) = new(coordinates, size(coordinates, 2))
 end
