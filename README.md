@@ -15,8 +15,11 @@ julia> using MolHandler
 ```julia
 julia> using MolHandler
 julia> trj = readdcd("trajectory.dcd")
-julia> trj.coordinates[:,1] # get first snapshot as Atom array.
+julia> trj.coordinates[:,1] # get first snapshot as Vector{Float32} array.
 julia> trj.coordinates[1,:] # get first atom coordinate time series by Atom array.
+julia> frame      = get_frame(1, trj) # get first frame as Frame object.
+julia> atom_array = get_atom(1, trj) # get first atom time series as Atom array.
+julia> atom       = get_atom(2, frame) # get atom as Atom object.
 ```
 
 ### Trajectory struct
@@ -26,6 +29,13 @@ Trajectory struct have 2 fields like below.
     - attributes  : Vector{Attribute}
     - nframe      : Number of frame in the trajectory.
 
+### Frame struct
+Frame struct have mean one snapshot of trajectory.
+This struct have 2 fields like below.
+
+    - coordinates : Vector{Vector{Float32}}
+    - attribute   : Vector{Attribute}
+
 ### Atom struct
 Atom struct have 2 fields like below.
 
@@ -33,7 +43,8 @@ Atom struct have 2 fields like below.
     - attribute  : Reference to Attribute class.
 
 ### Attribute struct
-Attribute struct have 5 fields like below.
+Attribute struct mean information of atom.
+This struct have 5 fields like below.
 
     - resname  : Union{String,  Nothing}
     - resid    : Union{Int64,   Nothing}
