@@ -3,13 +3,17 @@ function readdcd(filename::String)
     coordinates_time_series = Matrix{Atom}(undef, 0, 0)
 
     open(filename, "r") do io
+        seekend(io)
+        file_size = position(io) # get file size
+        seekstart(io)
+
         # read header first block
         skip(io, 4) # skip block size part
         header_sig = Array{Char, 1}(undef, 4)
         for i in 1:4
             header_sig[i] = read(io, Char)
         end
-        total_frame = read(io, Int32)
+        total_frame_in_header = read(io, Int32)
         first_step = read(io, Int32)
         nstep_save = read(io, Int32)
         total_step     = read(io, Int32)
@@ -41,6 +45,10 @@ function readdcd(filename::String)
         skip(io, 4) # skip block size part
 
         # read body block
+        header_size = position(io)
+        coordblocksize = (8 + 4 * number_of_atom) * 3
+        total_frame = Int64((file_size - header_size) / coordblocksize)
+
         coordinates_time_series = Matrix{Vector{Float32}}(undef, number_of_atom, total_frame)
         for frame_idx in 1:total_frame
             # read x coordinates
