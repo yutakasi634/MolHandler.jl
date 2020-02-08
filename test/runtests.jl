@@ -11,6 +11,9 @@ end
     trj = readpdb("1aki.pdb")
     @test isapprox(trj.coordinates[1,1], [35.365, 22.342, -11.980], atol = 1e-3)
     @test isapprox(trj.coordinates[1079, 1], [43.755, 23.843, 8.038], atol = 1e-3)
+    @test trj.attributes[123].atomname == "N"
+    @test trj.attributes[200].resid == 26
+    @test trj.attributes[231].resname == "VAL"
 end
 
 @testset "get_frame" begin
