@@ -1,4 +1,4 @@
-function readdcd(filename::String)
+function readdcd(filename::String)::Trajectory
 
     coordinates_time_series = Matrix{Atom}(undef, 0, 0)
 
@@ -74,4 +74,29 @@ function readdcd(filename::String)
         end
     end
     Trajectory(coordinates_time_series)
+end
+
+function readpdb(filename::String)::Trajectory
+    lines = open(filename, "r") do io
+        readlines(io)
+    end
+
+    attributes = []
+    coordinates = []
+    for line in lines
+        if occursin(r"^(ATOM|HETATM)", line)
+            atomid   = parse(Int64, line[7:11])
+            atomname = strip(line[13:16])
+            resname  = strip(line[18:20])
+            resid    = parse(Int64, line[23:26])
+            x_coord  = parse(Float32, line[31:38])
+            y_coord  = parse(Float32, line[39:46])
+            z_coord  = parse(Float32, line[47:54])
+
+            push!(attributes, Attribute(resname = resname, resid = resid,
+                                        atomname = atomname, atomid = atomid))
+            push!(coordinates, [x_coord, y_coord, z_coord])
+        end
+    end
+    Trajectory(reshape(coordinates, (length(coordinates), 1) ), attributes)
 end

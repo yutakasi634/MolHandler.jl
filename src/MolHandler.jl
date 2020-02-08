@@ -1,7 +1,7 @@
 module MolHandler
 
 export Atom, Attribute, Frame, Trajectory
-export readdcd
+export readdcd, readpdb
 export get_frame, get_atom
 
 # codes
