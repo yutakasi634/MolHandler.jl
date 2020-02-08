@@ -3,6 +3,9 @@ uuid = "50fc6b0e-c9f1-4327-9b2e-2c1c555c7c24"
 authors = ["Yutaka Murata"]
 version = "0.1.0"
 
+[deps]
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+
 [compat]
 julia = "1.2"
 
