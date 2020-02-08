@@ -15,6 +15,7 @@ julia> using MolHandler
 ```julia
 julia> using MolHandler
 julia> trj = readdcd("trajectory.dcd")
+julia> #trj = readpdb("structure.pdb")
 julia> trj.coordinates[:,1] # get first snapshot as Vector{Float32} array.
 julia> trj.coordinates[1,:] # get first atom coordinate time series by Atom array.
 julia> frame      = get_frame(1, trj) # get first frame as Frame object.
