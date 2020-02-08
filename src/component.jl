@@ -4,7 +4,7 @@ mutable struct Attribute
     resid::Union{Int64, Nothing}
     atomname::Union{String, Nothing}
     atomid::Union{Int64, Nothing}
-    mass::Union{Float64, Nothing}
+    mass::Union{Float32, Nothing}
 
     function Attribute(;resname = nothing, resid = nothing,
                        atomname = nothing, atomid = nothing, mass = nothing)
@@ -14,7 +14,7 @@ end
 
 mutable struct Atom
 
-    coordinate::Vector{Float64} # [x, y, z]
+    coordinate::Vector{Float32} # [x, y, z]
     attribute::Attribute
 end
 
@@ -24,16 +24,17 @@ end
 
 mutable struct Trajectory
 
-    coordinates::Matrix{Atom}
+    coordinates::Matrix{Vector{Float32}}
     # The column of coordinates matrix means one snapshot.
     # The row of coordinates matrix means time series of one atom.
     # [ a d g j
     #   b e h k
     #   c f i l ]
     # In this case, one snapshot correspond to [a b c]
+    attributes::Vector{Attribute}
     nframe::Union{Int64, Nothing}
 
-    function Trajectory(coordinates)
-        new(coordinates, size(coordinates, 2))
+    function Trajectory(coordinates, attributes = [Attribute() for i=1:size(coordinates, 2)])
+        new(coordinates, attributes, size(coordinates, 2))
     end
 end

@@ -41,7 +41,7 @@ function readdcd(filename::String)
         skip(io, 4) # skip block size part
 
         # read body block
-        coordinates_time_series = Matrix{Atom}(undef, number_of_atom, total_frame)
+        coordinates_time_series = Matrix{Vector{Float32}}(undef, number_of_atom, total_frame)
         for frame_idx in 1:total_frame
             # read x coordinates
             skip(io, 4) # skip block size part
@@ -61,7 +61,7 @@ function readdcd(filename::String)
             read!(io, z_coords)
             skip(io, 4) # skip block size part
 
-            atoms = map(xyz -> Atom(xyz), eachrow(hcat(x_coords, y_coords, z_coords)))
+            atoms = collect(eachrow(hcat(x_coords, y_coords, z_coords)))
             coordinates_time_series[:, frame_idx] = atoms
         end
     end

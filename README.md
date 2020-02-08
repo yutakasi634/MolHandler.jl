@@ -22,20 +22,21 @@ julia> trj.coordinates[1,:] # get first atom coordinate time series by Atom arra
 ### Trajectory struct
 Trajectory struct have 2 fields like below.
 
-    - coordinates : Matrix{Atom}.
+    - coordinates : Matrix{Vector{Float32}}.
+    - attributes  : Vector{Attribute}
     - nframe      : Number of frame in the trajectory.
 
 ### Atom struct
 Atom struct have 2 fields like below.
 
     - coordinate : Vector{Float64}.
-    - attribute  : Reference to Attribute class. 
+    - attribute  : Reference to Attribute class.
 
 ### Attribute struct
 Attribute struct have 5 fields like below.
 
-    - resname
-    - resid
-    - atomname
-    - atomid
-    - mass
+    - resname  : Union{String,  Nothing}
+    - resid    : Union{Int64,   Nothing}
+    - atomname : Union{String,  Nothing}
+    - atomid   : Union{Int64,   Nothing}
+    - mass     : Union{Float32, Nothing}
