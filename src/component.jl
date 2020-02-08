@@ -38,3 +38,12 @@ mutable struct Trajectory
         new(coordinates, attributes, size(coordinates, 2))
     end
 end
+
+mutable struct Frame
+    coordinates::Vector{Vector{Float32}}
+    attributes::Vector{Attribute}
+
+    function Frame(coordinates, attributes = [Attribute() for i=1:length(coordinates)])
+        new(coordinates, attributes)
+    end
+end
