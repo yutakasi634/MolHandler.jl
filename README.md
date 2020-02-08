@@ -20,7 +20,10 @@ julia> trj.coordinates[1,:] # get first atom coordinate time series by Atom arra
 julia> frame      = get_frame(1, trj) # get first frame as Frame object.
 julia> atom_array = get_atom(1, trj) # get first atom time series as Atom array.
 julia> atom       = get_atom(2, frame) # get second atom as Atom object.
+julia> display_frame(frame) # display frame like below.
 ```
+
+![newplot](https://user-images.githubusercontent.com/15133454/74083822-9d786e80-4aab-11ea-87b3-86450fa3ff07.png)
 
 ### Trajectory struct
 Trajectory struct have 2 fields like below.
