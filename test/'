@@ -1,0 +1,30 @@
+using MolHandler
+using Test
+
+@testset "readdcd function" begin
+    trj = readdcd("test_position.dcd")
+    @test isapprox(trj.coordinates[1,1],    [15.308, 14.180, -2.955], atol = 1e-3)
+    @test isapprox(trj.coordinates[5,1001], [-2.577, 88.384, -7.513], atol = 1e-3)
+end
+
+@testset "get_frame" begin
+    coordinates = [1.0 2.0 3.0; 1.1 2.1 3.1; 1.2 2.2 3.2]
+    attributes  = [Attribute(atomname = "hoge"), Attribute(atomname = "huga"), Attribute(atomname = "hugo")]
+    trj = Trajectory(coordinates, attribute)
+    frame1 = get_frame(1, trj)
+    frame3 = get_frame(3, trj)
+    @test isapprox(frame1.coordinates[1], 1e-7)
+    @test frame3.attributes[3]   == "hugo"
+end
+
+@testset "get_atom" begin
+    coordinates = [1.0 2.0 3.0; 1.1 2.1 3.1; 1.2 2.2 3.2]
+    attributes  = [Attribute(atomname = "hoge"), Attribute(atomname = "huga"), Attribute(atomname = "hugo")]
+    trj = Trajectory(coordinates, attributes)
+    atom1_series = get_atom(1, trj)
+    @test isapprox(atom1_series[3].coordinate[3], 3.2)
+
+    frame = Frame(coordinates[:,1], attributes)
+    atom3 = get_atom(3, frame)
+    @test atom3.attribute[]
+end
