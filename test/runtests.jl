@@ -7,6 +7,12 @@ using Test
     @test isapprox(trj.coordinates[5,1001], [-2.577, 88.384, -7.513], atol = 1e-3)
 end
 
+@testset "readpdb function" begin
+    trj = readpdb("1aki.pdb")
+    @test isapprox(trj.coordinates[1,1], [35.365, 22.342, -11.980], atol = 1e-3)
+    @test isapprox(trj.coordinates[1079, 1], [43.755, 23.843, 8.038], atol = 1e-3)
+end
+
 @testset "get_frame" begin
     coordinates = Matrix{Vector{Float32}}(undef, 2, 2)
     coordinates[1,1] = [1.1f0, 1.2f0, 1.3f0]
