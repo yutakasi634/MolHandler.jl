@@ -1,12 +1,28 @@
-struct Atom
+mutable struct Attribute
 
-    coordinate::Vector{Float64} # [x, y, z]
+    resname::Union{String, Nothing}
+    resid::Union{Int64, Nothing}
+    atomname::Union{String, Nothing}
+    atomid::Union{Int64, Nothing}
+    mass::Union{Float64, Nothing}
 
-    Atom()           = new()
-    Atom(coordinate) = new(coordinate)
+    function Attribute(;resname = nothing, resid = nothing,
+                       atomname = nothing, atomid = nothing, mass = nothing)
+        new(resname, resid, atomname, atomid, mass)
+    end
 end
 
-struct Trajectory
+mutable struct Atom
+
+    coordinate::Vector{Float64} # [x, y, z]
+    attribute::Attribute
+end
+
+function Atom(coordinate)
+    Atom(coordinate, Attribute())
+end
+
+mutable struct Trajectory
 
     coordinates::Matrix{Atom}
     # The column of coordinates matrix means one snapshot.
@@ -15,12 +31,9 @@ struct Trajectory
     #   b e h k
     #   c f i l ]
     # In this case, one snapshot correspond to [a b c]
-    nframe::Int64
-    resname::Vector{String}
-    resid::Vector{Int64}
-    atomname::Vector{String}
-    atomid::Vector{Int64}
-    mass::Vector{Float64}
+    nframe::Union{Int64, Nothing}
 
-    Trajectory(coordinates) = new(coordinates, size(coordinates, 2))
+    function Trajectory(coordinates)
+        new(coordinates, size(coordinates, 2))
+    end
 end

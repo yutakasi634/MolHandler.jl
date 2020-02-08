@@ -1,6 +1,6 @@
 module MolHandler
 
-export Atom, Trajectory
+export Atom, Attribute, Trajectory
 export readdcd
 
 # codes
