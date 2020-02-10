@@ -24,7 +24,7 @@ julia> atom       = get_atom(2, frame) # get second atom as Atom object.
 ```
 
 ### Trajectory struct
-Trajectory struct have 2 fields like below.
+Trajectory struct have 4 fields like below.
 
     - coordinates : Matrix{Vector{Float32}}.
     - attributes  : Vector{Attribute}
@@ -33,7 +33,7 @@ Trajectory struct have 2 fields like below.
 
 ### Frame struct
 Frame struct have mean one snapshot of trajectory.
-This struct have 2 fields like below.
+This struct have 3 fields like below.
 
     - coordinates : Vector{Vector{Float32}}
     - attribute   : Vector{Attribute}
