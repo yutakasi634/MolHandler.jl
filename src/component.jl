@@ -14,7 +14,7 @@ end
 
 mutable struct Atom
 
-    coordinate::Vector{Float32} # [x, y, z]
+    coordinate::Coordinate{Float32}
     attribute::Attribute
 end
 
@@ -24,7 +24,7 @@ end
 
 mutable struct Trajectory
 
-    coordinates::Matrix{Vector{Float32}}
+    coordinates::Matrix{Coordinate{Float32}}
     # The column of coordinates matrix means one snapshot.
     # The row of coordinates matrix means time series of one atom.
     # [ a d g j
@@ -41,7 +41,7 @@ mutable struct Trajectory
 end
 
 mutable struct Frame
-    coordinates::Vector{Vector{Float32}}
+    coordinates::Vector{Coordinate{Float32}}
     attributes::Vector{Attribute}
     natom::Int64
 

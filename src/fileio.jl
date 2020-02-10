@@ -1,6 +1,6 @@
 function readdcd(filename::String)::Trajectory
 
-    coordinates_time_series = Matrix{Atom}(undef, 0, 0)
+    coordinates_time_series = Matrix{Coordinate{Float32}}(undef, 0, 0)
 
     open(filename, "r") do io
         seekend(io)
@@ -49,7 +49,7 @@ function readdcd(filename::String)::Trajectory
         coordblocksize = (8 + 4 * number_of_atom) * 3
         total_frame = Int64((file_size - header_size) / coordblocksize)
 
-        coordinates_time_series = Matrix{Vector{Float32}}(undef, number_of_atom, total_frame)
+        coordinates_time_series = Matrix{Coordinate{Float32}}(undef, number_of_atom, total_frame)
         for frame_idx in 1:total_frame
             # read x coordinates
             skip(io, 4) # skip block size part
@@ -70,7 +70,7 @@ function readdcd(filename::String)::Trajectory
             skip(io, 4) # skip block size part
 
             atoms = collect(eachrow(hcat(x_coords, y_coords, z_coords)))
-            coordinates_time_series[:, frame_idx] = atoms
+            coordinates_time_series[:, frame_idx] = Coordinate.(atoms)
         end
     end
     Trajectory(coordinates_time_series)
@@ -95,7 +95,7 @@ function readpdb(filename::String)::Trajectory
 
             push!(attributes, Attribute(resname = resname, resid = resid,
                                         atomname = atomname, atomid = atomid))
-            push!(coordinates, [x_coord, y_coord, z_coord])
+            push!(coordinates, Coordinate([x_coord, y_coord, z_coord]))
         end
     end
     Trajectory(reshape(coordinates, (length(coordinates), 1) ), attributes)
