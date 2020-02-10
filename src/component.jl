@@ -32,18 +32,20 @@ mutable struct Trajectory
     #   c f i l ]
     # In this case, one snapshot correspond to [a b c]
     attributes::Vector{Attribute}
-    nframe::Union{Int64, Nothing}
+    natom::Int64
+    nframe::Int64
 
     function Trajectory(coordinates, attributes = [Attribute() for i=1:size(coordinates, 2)])
-        new(coordinates, attributes, size(coordinates, 2))
+        new(coordinates, attributes, size(coordinates, 1), size(coordinates, 2))
     end
 end
 
 mutable struct Frame
     coordinates::Vector{Vector{Float32}}
     attributes::Vector{Attribute}
+    natom::Int64
 
     function Frame(coordinates, attributes = [Attribute() for i=1:length(coordinates)])
-        new(coordinates, attributes)
+        new(coordinates, attributes, length(coordinates))
     end
 end
