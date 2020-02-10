@@ -28,7 +28,8 @@ Trajectory struct have 2 fields like below.
 
     - coordinates : Matrix{Vector{Float32}}.
     - attributes  : Vector{Attribute}
-    - nframe      : Number of frame in the trajectory.
+    - natom       : Number of atoms.
+    - nframe      : Number of frames in the trajectory.
 
 ### Frame struct
 Frame struct have mean one snapshot of trajectory.
@@ -36,6 +37,7 @@ This struct have 2 fields like below.
 
     - coordinates : Vector{Vector{Float32}}
     - attribute   : Vector{Attribute}
+    - natom       : Number of atoms.
 
 ### Atom struct
 Atom struct have 2 fields like below.
