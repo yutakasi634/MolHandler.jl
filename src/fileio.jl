@@ -1,3 +1,8 @@
+"""
+    readdcd(filename::String)::Trajectory
+
+Return Trajectory object which filled coordinates, `nframe`, `natom` fields.
+"""
 function readdcd(filename::String)::Trajectory
 
     coordinates_time_series = Matrix{Coordinate{Float32}}(undef, 0, 0)
@@ -76,6 +81,11 @@ function readdcd(filename::String)::Trajectory
     Trajectory(coordinates_time_series)
 end
 
+"""
+    readpdb(filename::String)::Trajectory
+
+Return Trajectory object which filled all field.
+"""
 function readpdb(filename::String)::Trajectory
     lines = open(filename, "r") do io
         readlines(io)

@@ -1,3 +1,13 @@
+"""
+This struct mean all atomic information other than coordinates.
+This contains 5 fields like below.
+
+- resname  : Union{String,  Nothing}
+- resid    : Union{Int64,   Nothing}
+- atomname : Union{String,  Nothing}
+- atomid   : Union{Int64,   Nothing}
+- mass     : Union{Float32, Nothing}
+"""
 mutable struct Attribute
 
     resname::Union{String, Nothing}
@@ -12,8 +22,14 @@ mutable struct Attribute
     end
 end
 
-mutable struct Atom
+"""
+This struct have all information of corresponding atom.
+This contains 2 fields like below.
 
+- coordinate : Reference to [`Coordinate`](@ref) object.
+- attribute  : Reference to [`Attribute`](@ref) object.
+"""
+mutable struct Atom
     coordinate::Coordinate{Float32}
     attribute::Attribute
 end
@@ -22,15 +38,28 @@ function Atom(coordinate)
     Atom(coordinate, Attribute())
 end
 
-mutable struct Trajectory
+"""
+This struct corresponding to MD trajectory.
+This contains 4 fields like below.
 
+- coordinates : Matrix{[`Coordinate`](@ref)}
+- attributes  : Vector{[`Attribute`](@ref)}
+- natom       : Number of atoms.
+- nframe      : Number of frames in the trajectory.
+
+The column of coordinates matrix means one snapshot.
+The row of coordinates matrix means time series of one atom.
+
+```julia
+[ a d g j
+  b e h k
+  c f i l ]
+```
+
+In this case, one snapshot correspond to `[a b c]`.
+"""
+mutable struct Trajectory
     coordinates::Matrix{Coordinate{Float32}}
-    # The column of coordinates matrix means one snapshot.
-    # The row of coordinates matrix means time series of one atom.
-    # [ a d g j
-    #   b e h k
-    #   c f i l ]
-    # In this case, one snapshot correspond to [a b c]
     attributes::Vector{Attribute}
     natom::Int64
     nframe::Int64
@@ -40,6 +69,14 @@ mutable struct Trajectory
     end
 end
 
+"""
+This struct correspond to one snapshot of trajectory.
+This contains 3 fields like below.
+
+- coordinates : Vector{[`Coordinate`](@ref)}
+- attribute   : Vector{[`Attribute`](@ref)}
+- natom       : Number of atoms.
+"""
 mutable struct Frame
     coordinates::Vector{Coordinate{Float32}}
     attributes::Vector{Attribute}

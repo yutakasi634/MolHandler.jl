@@ -1,4 +1,14 @@
 import Base: +, -, *, /, length, iterate, Array
+"""
+This correspond to coordinate of atom.
+This contain 3 fields like below.
+
+- x <: Real
+- y <: Real
+- z <: Real
+
+Some operators and functions were overloaded to make Coordinate objects broadcastable.
+"""
 mutable struct Coordinate{R <: Real}
     # This class is for make vector operation broadcastable.
     x::R
