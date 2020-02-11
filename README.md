@@ -18,10 +18,10 @@ julia> using MolHandler
 julia> using MolHandler
 julia> trj = readdcd("trajectory.dcd")
 julia> #trj = readpdb("structure.pdb")
-julia> trj.coordinates[:,1] # get first snapshot as Coordinate array.
-julia> trj.coordinates[1,:] # get first atom coordinate time series by Atom array.
+julia> trj.coordinates[:,1] # get first snapshot as Coordinate object array.
+julia> trj.coordinates[1,:] # get first atom coordinate time series by Coordinate object array.
 julia> frame      = get_frame(1, trj) # get first frame as Frame object.
-julia> atom_array = get_atom(1, trj) # get first atom time series as Atom array.
+julia> atom_array = get_atom(1, trj) # get first atom time series as Atom object array.
 julia> atom       = get_atom(2, frame) # get second atom as Atom object.
 ```
 
