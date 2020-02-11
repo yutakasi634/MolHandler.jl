@@ -22,35 +22,3 @@ julia> frame      = get_frame(1, trj) # get first frame as Frame object.
 julia> atom_array = get_atom(1, trj) # get first atom time series as Atom array.
 julia> atom       = get_atom(2, frame) # get second atom as Atom object.
 ```
-
-### Trajectory struct
-Trajectory struct have 4 fields like below.
-
-    - coordinates : Matrix{Vector{Float32}}.
-    - attributes  : Vector{Attribute}
-    - natom       : Number of atoms.
-    - nframe      : Number of frames in the trajectory.
-
-### Frame struct
-Frame struct have mean one snapshot of trajectory.
-This struct have 3 fields like below.
-
-    - coordinates : Vector{Vector{Float32}}
-    - attribute   : Vector{Attribute}
-    - natom       : Number of atoms.
-
-### Atom struct
-Atom struct have 2 fields like below.
-
-    - coordinate : Vector{Float64}.
-    - attribute  : Reference to Attribute class.
-
-### Attribute struct
-Attribute struct mean information of atom.
-This struct have 5 fields like below.
-
-    - resname  : Union{String,  Nothing}
-    - resid    : Union{Int64,   Nothing}
-    - atomname : Union{String,  Nothing}
-    - atomid   : Union{Int64,   Nothing}
-    - mass     : Union{Float32, Nothing}
