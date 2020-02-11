@@ -1,5 +1,7 @@
 # MolHandler
 
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://yutakasi634.github.io/MolHandler.jl/stable)
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://yutakasi634.github.io/MolHandler.jl/dev)
 [![Build Status](https://travis-ci.com/yutakasi634/MolHandler.svg?branch=master)](https://travis-ci.com/yutakasi634/MolHandler.jl)
 [![Codecov](https://codecov.io/gh/yutakasi634/MolHandler.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/yutakasi634/MolHandler.jl)
 [![Coveralls](https://coveralls.io/repos/github/yutakasi634/MolHandler.jl/badge.svg?branch=master)](https://coveralls.io/github/yutakasi634/MolHandler.jl?branch=master)
