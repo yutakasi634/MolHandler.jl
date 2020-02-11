@@ -25,5 +25,5 @@ julia> atom_array = get_atom(1, trj) # get first atom time series as Atom array.
 julia> atom       = get_atom(2, frame) # get second atom as Atom object.
 ```
 
-# Document
+## Document
 Online document is https://yutakasi634.github.io/MolHandler.jl/dev.
