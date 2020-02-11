@@ -13,7 +13,7 @@ pkg> add https://github.com/yutakasi634/MolHandler.jl.git
 julia> using MolHandler
 ```
 
-## How to use
+## Example of use
 ```julia
 julia> using MolHandler
 julia> trj = readdcd("trajectory.dcd")
@@ -24,3 +24,6 @@ julia> frame      = get_frame(1, trj) # get first frame as Frame object.
 julia> atom_array = get_atom(1, trj) # get first atom time series as Atom array.
 julia> atom       = get_atom(2, frame) # get second atom as Atom object.
 ```
+
+# Document
+Online document is https://yutakasi634.github.io/MolHandler.jl/dev.
