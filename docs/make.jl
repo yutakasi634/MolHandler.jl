@@ -8,3 +8,7 @@ makedocs(
         "Structs" => "structs.md"
     ]
 )
+
+deploydocs(
+    repo = "github.com/yutakasi634/MolHandler.jl.git",
+)
