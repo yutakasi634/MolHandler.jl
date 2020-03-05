@@ -33,8 +33,8 @@ end
 Clip a part of trajectory you specified.
 Expected query key is one of the following
 
-    - `:frame` : in this case, query specify the frame index.
-    - `:atom`  : in this case, query specify the atom index.
+- `:frame` : in this case, query specify the frame index.
+- `:atom`  : in this case, query specify the atom index.
 """
 function clip_trajectory(query::Integer, trj::Trajectory,
                          query_key::Symbol = :frame)::Trajectory
