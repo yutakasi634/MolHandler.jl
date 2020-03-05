@@ -5,7 +5,7 @@
 Order = [:function]
 ```
 
-## File IO 
+## File IO
 ```@docs
 readdcd
 readpdb
@@ -15,4 +15,5 @@ readpdb
 ```@docs
 get_frame
 get_atom
+clip_trajectory
 ```
