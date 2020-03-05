@@ -68,5 +68,31 @@ function clip_trajectory(query::Union{Array{T, 1}, OrdinalRange}, trj::Trajector
     end
 end
 
-# function center_of_mass(index::Union{Integer, Array, StepRange}, trj::Trajectory)::Vector{Coordinate{Float32}}
-# end
+"""
+    center_of_mass(Trajectory;
+                   indices = Union{Array, OrdinalRange, Colon} = :,
+                   geometric = Bool = false)::Vector{Coordinate{Float32}}
+
+Calculate the center of mass of trajectory for specified atom indices.
+If you set geometric flag is `true`, this function calculate geometric center of mass.
+"""
+function center_of_mass(trj::Trajectory;
+                        indices = indices::Union{Array, OrdinalRange, Colon} = :,
+                        geometric = geometric::Bool = false)::Vector{Coordinate{Float32}}
+    if !geometric
+        mass_vec = map(attributes -> attributes.mass, trj.attributes)
+        selected_mass_vec = mass_vec[indices]
+        if Nothing ∈ selected_mass_vec
+            error("""
+                  center_of_mass: geometric flag is false but attributes of trajectory have Nothing value.
+                  you can not use mass to calculation.
+                  """)
+        end
+        total_mass = sum(selected_mass_vec)
+        weited_sum = reshape(selected_mass_vec, (1, length(selected_mass_vec))) * trj.coordinates[indices, :]
+        vec( weited_sum / total_mass)
+    else
+        selected_coord = trj.coordinates[indices, :]
+        vec(sum(selected_coord, dims = 1) / size(selected_coord, 1))
+    end
+end
