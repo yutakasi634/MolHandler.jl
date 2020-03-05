@@ -52,8 +52,8 @@ end
     for atom_idx in 1:3, frame_idx in 1:3
         coordinates[atom_idx, frame_idx] =
             Coordinate([atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.1f0,
-                        atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.1f0,
-                        atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.1f0])
+                        atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.2f0,
+                        atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.3f0])
     end
     attributes = [Attribute(atomname = "hoge"), Attribute(atomname = "huga"), Attribute(atomname = "piyo")]
     trj = Trajectory(coordinates, attributes)
@@ -73,8 +73,8 @@ end
     for atom_idx in 1:3, frame_idx in 1:3
         coordinates[atom_idx, frame_idx] =
             Coordinate([atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.1f0,
-                        atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.1f0,
-                        atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.1f0])
+                        atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.2f0,
+                        atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.3f0])
     end
     attributes = [Attribute(atomname = "hoge"), Attribute(atomname = "huga"), Attribute(atomname = "piyo")]
     trj = Trajectory(coordinates, attributes)
@@ -94,4 +94,23 @@ end
     cliped_atom_range = clip_trajectory(1:2:3, trj, :atom)
     @test cliped_atom_range.coordinates == trj.coordinates[1:2:3, :]
     @test cliped_atom_range.attributes  == trj.attributes[1:2:3]
+end
+
+@testset "center_of_mass" begin
+    coordinates = Matrix{Coordinate{Float32}}(undef, 3, 3)
+    for atom_idx in 1:3, frame_idx in 1:3
+        coordinates[atom_idx, frame_idx] =
+            Coordinate([atom_idx * 10.0f0 + frame_idx * 1.0f0 + 0.1f0,
+                        atom_idx * 10.0f0 + frame_idx * 1.0f0 + 0.2f0,
+                        atom_idx * 10.0f0 + frame_idx * 1.0f0 + 0.3f0])
+    end
+    attributes = [Attribute(mass = 2.0f0), Attribute(mass = 3.0f0), Attribute(mass = 4.0f0)]
+    trj = Trajectory(coordinates, attributes)
+    @test isapprox(Array(center_of_mass(trj)[1]), [23.3222f0, 23.4222f0, 23.5222f0], atol = 1e-3)
+    @test isapprox(Array(center_of_mass(trj, indices = 1:2:3)[2]), [25.4333f0, 25.5333f0, 25.6333f0],
+                   atol = 1e-3)
+
+    @test isapprox(Array(center_of_mass(trj, geometric = true)[1]), [21.1f0, 21.2f0, 21.3f0], atol = 1e-3)
+    @test isapprox(Array(center_of_mass(trj, geometric = true, indices = 1:2:3)[2]),
+                   [22.1f0, 22.2f0, 22.3f0], atol = 1e-3)
 end
