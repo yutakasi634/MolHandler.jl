@@ -35,6 +35,10 @@ function *(arg1::Coordinate{T}, arg2::U) where T <: Real where U <: Real
     Coordinate([arg1.x * arg2, arg1.y * arg2, arg1.z * arg2])
 end
 
+function *(arg1::U, arg2::Coordinate{T}) where T <: Real where U <: Real
+    Coordinate([arg1 * arg2.x, arg1 * arg2.y, arg1 * arg2.z])
+end
+
 function *(arg1::Coordinate{T}, arg2::Coordinate{U}) where T <: Real where U <: Real
     arg1.x * arg2.x + arg1.y * arg2.y + arg1.z * arg2.z
 end
