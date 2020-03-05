@@ -52,7 +52,7 @@ function clip_trajectory(query::Integer, trj::Trajectory,
     end
 end
 
-    function clip_trajectory(query::Union{Array{T, 1}, OrdinalRange}, trj::Trajectory,
+function clip_trajectory(query::Union{Array{T, 1}, OrdinalRange}, trj::Trajectory,
                              query_key::Symbol = :frame)::Trajectory where T <: Integer
     if query_key == :frame
         Trajectory(trj.coordinates[:, query], trj.attributes)
