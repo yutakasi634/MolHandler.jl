@@ -46,3 +46,52 @@ end
     @test isapprox(atom1.coordinate.x, 1.1f0, atol = 1e-7)
     @test atom2.attribute.atomname == "huga"
 end
+
+@testset "clip_trajectory(query::Integer)" begin
+    coordinates = Matrix{Coordinate{Float32}}(undef, 3, 3)
+    for atom_idx in 1:3, frame_idx in 1:3
+        coordinates[atom_idx, frame_idx] =
+            Coordinate([atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.1f0,
+                        atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.1f0,
+                        atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.1f0])
+    end
+    attributes = [Attribute(atomname = "hoge"), Attribute(atomname = "huga"), Attribute(atomname = "piyo")]
+    trj = Trajectory(coordinates, attributes)
+
+    cliped_frame_int = clip_trajectory(2, trj)
+    @test cliped_frame_int.coordinates  == reshape(trj.coordinates[:, 2], (3, 1))
+    @test cliped_frame_int.attributes   == trj.attributes
+
+    cliped_atom_int = clip_trajectory(2, trj, :atom)
+    @test cliped_atom_int.coordinates  == reshape(trj.coordinates[2, :], (1, 3))
+    @test cliped_atom_int.attributes   == [trj.attributes[2]]
+
+end
+
+@testset "clip_trajectory(query::Union{Array, StepRange})" begin
+    coordinates = Matrix{Coordinate{Float32}}(undef, 3, 3)
+    for atom_idx in 1:3, frame_idx in 1:3
+        coordinates[atom_idx, frame_idx] =
+            Coordinate([atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.1f0,
+                        atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.1f0,
+                        atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.1f0])
+    end
+    attributes = [Attribute(atomname = "hoge"), Attribute(atomname = "huga"), Attribute(atomname = "piyo")]
+    trj = Trajectory(coordinates, attributes)
+
+    cliped_frame_array = clip_trajectory([2, 3], trj)
+    @test cliped_frame_array.coordinates == trj.coordinates[:, [2, 3]]
+    @test cliped_frame_array.attributes  == trj.attributes
+
+    cliped_frame_range = clip_trajectory(1:2:3, trj)
+    @test cliped_frame_range.coordinates == trj.coordinates[:, 1:2:3]
+    @test cliped_frame_range.attributes  == trj.attributes
+
+    cliped_atom_array = clip_trajectory([2, 3], trj, :atom)
+    @test cliped_atom_array.coordinates == trj.coordinates[[2, 3], :]
+    @test cliped_atom_array.attributes  == trj.attributes[[2, 3]]
+
+    cliped_atom_range = clip_trajectory(1:2:3, trj, :atom)
+    @test cliped_atom_range.coordinates == trj.coordinates[1:2:3, :]
+    @test cliped_atom_range.attributes  == trj.attributes[1:2:3]
+end
