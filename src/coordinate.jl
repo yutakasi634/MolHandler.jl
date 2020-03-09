@@ -64,11 +64,14 @@ function zero(arg::Coordinate{T}) where T <: Real
     Coordinate([T(0.0) T(0.0) T(0.0)])
 end
 
+function Array(arg::Coordinate{T}) where T <: Real
+    [arg.x, arg.y, arg.z]
+end
+
 function norm(arg::Coordinate{T}) where T <: Real
     sqrt(abs2(arg.x) + abs2(arg.y) + abs2(arg.z))
 end
 
-
-function Array(arg::Coordinate{T}) where T <: Real
-    [arg.x, arg.y, arg.z]
+function distance(first_coord::Coordinate{T}, second_coord::Coordinate{T}) where T <: Real
+    norm(first_coord - second_coord)
 end
