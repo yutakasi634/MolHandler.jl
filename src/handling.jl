@@ -69,9 +69,9 @@ function clip_trajectory(query::Union{Array{T, 1}, OrdinalRange}, trj::Trajector
 end
 
 """
-    center_of_mass(Trajectory;
+    center_of_mass(query::Trajectory;
                    indices = Union{Array, OrdinalRange, Colon} = :,
-                   geometric = Bool = false)::Vector{Coordinate{Float32}}
+                   geometric = geometric_flag::Bool = false)::Vector{Coordinate{Float32}}
 
 Calculate the center of mass of trajectory for specified atom indices.
 If you set geometric flag is `true`, this function calculate geometric center of mass.
