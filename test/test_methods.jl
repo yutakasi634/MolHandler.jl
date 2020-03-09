@@ -62,7 +62,7 @@ end
     @test cliped_frame_int.coordinates  == reshape(trj.coordinates[:, 2], (3, 1))
     @test cliped_frame_int.attributes   == trj.attributes
 
-    cliped_atom_int = clip_trajectory(2, trj, :atom)
+    cliped_atom_int = clip_trajectory(2, trj, query_key = :atom)
     @test cliped_atom_int.coordinates  == reshape(trj.coordinates[2, :], (1, 3))
     @test cliped_atom_int.attributes   == [trj.attributes[2]]
 
@@ -87,11 +87,11 @@ end
     @test cliped_frame_range.coordinates == trj.coordinates[:, 1:2:3]
     @test cliped_frame_range.attributes  == trj.attributes
 
-    cliped_atom_array = clip_trajectory([2, 3], trj, :atom)
+    cliped_atom_array = clip_trajectory([2, 3], trj, query_key = :atom)
     @test cliped_atom_array.coordinates == trj.coordinates[[2, 3], :]
     @test cliped_atom_array.attributes  == trj.attributes[[2, 3]]
 
-    cliped_atom_range = clip_trajectory(1:2:3, trj, :atom)
+    cliped_atom_range = clip_trajectory(1:2:3, trj, query_key = :atom)
     @test cliped_atom_range.coordinates == trj.coordinates[1:2:3, :]
     @test cliped_atom_range.attributes  == trj.attributes[1:2:3]
 end

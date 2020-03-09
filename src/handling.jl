@@ -27,8 +27,8 @@ end
 
 
 """
-    clip_trajectory(query::Union{Integer, Array{T, 1}, OrdinalRange}, trj::Trajectory,
-                    query_key::Symbol = :frame)::Trajecotory where T <: Integer
+    clip_trajectory(query::Union{Integer, Array{T, 1}, OrdinalRange}, trj::Trajectory;
+                    query_key = key::Symbol = :frame)::Trajecotory where T <: Integer
 
 Clip a part of trajectory you specified.
 Expected query key is one of the following
@@ -36,8 +36,8 @@ Expected query key is one of the following
 - `:frame` : in this case, query specify the frame index.
 - `:atom`  : in this case, query specify the atom index.
 """
-function clip_trajectory(query::Integer, trj::Trajectory,
-                         query_key::Symbol = :frame)::Trajectory
+function clip_trajectory(query::Integer, trj::Trajectory;
+                         query_key = query_key::Symbol = :frame)::Trajectory
     if query_key == :frame
         Trajectory(reshape(trj.coordinates[:, query], (trj.natom, 1)), trj.attributes)
     elseif query_key == :atom
@@ -52,7 +52,7 @@ function clip_trajectory(query::Integer, trj::Trajectory,
     end
 end
 
-function clip_trajectory(query::Union{Array{T, 1}, OrdinalRange}, trj::Trajectory,
+function clip_trajectory(query::Union{Array{T, 1}, OrdinalRange}, trj::Trajectory;
                              query_key::Symbol = :frame)::Trajectory where T <: Integer
     if query_key == :frame
         Trajectory(trj.coordinates[:, query], trj.attributes)
