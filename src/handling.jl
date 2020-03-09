@@ -53,7 +53,7 @@ function clip_trajectory(query::Integer, trj::Trajectory;
 end
 
 function clip_trajectory(query::Union{Array{T, 1}, OrdinalRange}, trj::Trajectory;
-                             query_key::Symbol = :frame)::Trajectory where T <: Integer
+                         query_key::Symbol = :frame)::Trajectory where T <: Integer
     if query_key == :frame
         Trajectory(trj.coordinates[:, query], trj.attributes)
     elseif query_key == :atom
@@ -95,4 +95,18 @@ function center_of_mass(trj::Trajectory;
         selected_coord = trj.coordinates[indices, :]
         vec(sum(selected_coord, dims = 1) / size(selected_coord, 1))
     end
+end
+
+function pair_length_matrix(first_coords::Array{Coordinate{T}, 1},
+                            second_coords::Array{Coordinate{T}, 1})::Matrix{Coordinate{T}} where T <: Real
+    distance.(first_coords, reshape(second_coords, (1, length(second_coords))))
+end
+
+function pair_length_matrix(trj::Trajectory;
+                            frame_indices = frame_ids::Union{Array, OrdinalRnage, Colon} = :,
+                            first_atoms_indices = first_atom_ids::Union{Array, OrdinalRange, Colon} = :,
+                            second_atoms_indices = second_atom_ids::Union{Array, OrdinalRnage, Colon} = first_indices)::Vector{Matrix{Coordinate}}
+    zip_iterate4frame = zip(each_col(trj.coordinates[first_atom_ids, frame_ids])
+                            each_col(trj.coordinates[second_atom_ids, frame_ids]))
+    map(coords_vec_pair -> pair_length_matrix(coords_vec_pair...), zip_iterate4frame)
 end
