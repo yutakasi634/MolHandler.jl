@@ -99,6 +99,7 @@ end
     coordinates = prepare_coordinates(3)
     attributes = [Attribute(mass = 2.0f0), Attribute(mass = 3.0f0), Attribute(mass = 4.0f0)]
     trj = Trajectory(coordinates, attributes)
+
     @test isapprox(Array(center_of_mass(trj)[1]), [23.3222f0, 23.4222f0, 23.5222f0], atol = 1e-3)
     @test isapprox(Array(center_of_mass(trj, indices = 1:2:3)[2]), [25.4333f0, 25.5333f0, 25.6333f0],
                    atol = 1e-3)
@@ -111,6 +112,7 @@ end
 @testset "pair_length_matrix" begin
     coordinates = prepare_coordinates(3)
     length_matrix = pair_length_matrix(coordinates[:, 1], coordinates[:, 3])
+
     @test size(length_matrix) == (3, 3)
     @test isapprox(38.1051f0, length_matrix[1, 3], atol = 1e-3)
 
@@ -118,6 +120,29 @@ end
     length_matrices = pair_length_matrix(trj, frame_indices = 1:2,
                                          first_atom_indices = 1:2:3,
                                          second_atom_indices = :)
+
     @test size(length_matrices[1]) == (2, 3)
     @test isapprox(34.6410f0, length_matrices[2][2, 1], atol = 1e-3)
+end
+
+@testset "contact_bool_matrix" begin
+    coordinates = prepare_coordinates(2)
+    trj = Trajectory(coordinates)
+    contact_bool_mat_arr = contact_bool_matrix(18.0, trj, first_atom_indices = 1:2, second_atom_indices = 2:3)
+
+    @test contact_bool_mat_arr[1][1, 1] == true
+    @test contact_bool_mat_arr[2][1, 2] == false
+end
+
+@testset "contact_probability_matrix" begin
+    coordinates = prepare_coordinates(3)
+    trj = Trajectory(coordinates)
+    contact_prob_mat = contact_probability_matrix(18.0, trj,
+                                                  frame_indices = 1:2:3,
+                                                  first_atom_indices = 1:2,
+                                                  second_atom_indices = 2:3)
+
+    @test size(contact_prob_mat) == (2, 2)
+    @test isapprox(contact_prob_mat[1, 1], 1.0f0, atol = 1e-3)
+    @test isapprox(contact_prob_mat[1, 2], 0.0f0, atol = 1e-3)
 end
