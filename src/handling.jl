@@ -1,5 +1,6 @@
 """
-    get_frame(frame_idx::Int64, trajectory::Trajectory)::Frame
+    get_frame(frame_idx::Int64, trajectory::Trajectory)
+    ::Frame
 
 Return Frame object which correspond to `framd_idx` frame from `trajectory`.
 """
@@ -8,7 +9,8 @@ function get_frame(frame_idx::Int64, trj::Trajectory)::Frame
 end
 
 """
-    get_atom(query::Int64, trajectory::Trajectory)::Vector{Atom}
+    get_atom(query::Int64, trajectory::Trajectory)
+    ::Vector{Atom}
 
 Return Vector of `query`th Atom object from `trajectory`.
 """
@@ -17,7 +19,8 @@ function get_atom(query::Int64, trj::Trajectory)::Vector{Atom}
 end
 
 """
-    get_atom(query::Int64, frame::Frame)::Atom
+    get_atom(query::Int64, frame::Frame)
+    ::Atom
 
 Return `query`th Atom object from `frame`.
 """
@@ -28,7 +31,8 @@ end
 
 """
     clip_trajectory(query::Union{Integer, Array{T, 1}, OrdinalRange}, trj::Trajectory;
-                    query_key = key::Symbol = :frame)::Trajecotory where T <: Integer
+                    query_key::Symbol = :frame)
+    ::Trajecotory where T <: Integer
 
 Clip a part of trajectory you specified.
 Expected query key is one of the following
@@ -70,11 +74,12 @@ end
 
 """
     center_of_mass(query::Trajectory;
-                   indices = Union{Array, OrdinalRange, Colon} = :,
-                   geometric = geometric_flag::Bool = false)::Vector{Coordinate{Float32}}
+                   indices::Union{Array, OrdinalRange, Colon} = :,
+                   geometric::Bool = false)
+    ::Vector{Coordinate{Float32}}
 
 Calculate the center of mass of trajectory for specified atom indices.
-If you set geometric flag is `true`, this function calculate geometric center of mass.
+If you set `geometric` is `true`, this function calculate geometric center of mass.
 """
 function center_of_mass(trj::Trajectory;
                         indices = indices::Union{Array, OrdinalRange, Colon} = :,
