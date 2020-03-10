@@ -102,16 +102,34 @@ function center_of_mass(trj::Trajectory;
     end
 end
 
-function pair_length_matrix(first_coords::Array{Coordinate{T}, 1},
-                            second_coords::Array{Coordinate{T}, 1})::Matrix{Coordinate{T}} where T <: Real
+"""
+    pair_length_matrix(corrds1::Vector{Coordinate}, coords2::Vector{Coordinate})
+    ::Matrix{Coordinate}
+
+Calculate distance matrix for all combination between `coords1` and `coord2`.
+The row of returned matrix coresspond to `coords1`, and the column correspond to `coords2`.
+"""
+function pair_length_matrix(first_coords::AbstractArray{Coordinate{T}, 1},
+                            second_coords::AbstractArray{Coordinate{T}, 1})::Matrix{T} where T <: Real
     distance.(first_coords, reshape(second_coords, (1, length(second_coords))))
 end
 
+"""
+    pair_length_matrix(trj::Trajectory;
+                       frame_indices::Union{Array, OrdinalRange, Colon}       = :,
+                       first_atom_indices::Union{Array, OrdinalRange, Colon}  = :,
+                       second_atom_indices::Union{Array, OrdinalRange, Colon} = atom_indices1)
+    ::Vector{Matrix{Coordinate}}
+
+Calculate distance matrix for all combination between `first_atom_indices` and `second_atom_indices`.
+This cauculation apply to each frame of trajectory and the result matrices are stored in Vector.
+The target frame can be restricted by pass indeces vector or range to `frame_indices`.
+"""
 function pair_length_matrix(trj::Trajectory;
-                            frame_indices = frame_ids::Union{Array, OrdinalRnage, Colon} = :,
-                            first_atoms_indices = first_atom_ids::Union{Array, OrdinalRange, Colon} = :,
-                            second_atoms_indices = second_atom_ids::Union{Array, OrdinalRnage, Colon} = first_indices)::Vector{Matrix{Coordinate}}
-    zip_iterate4frame = zip(each_col(trj.coordinates[first_atom_ids, frame_ids])
-                            each_col(trj.coordinates[second_atom_ids, frame_ids]))
+                            frame_indices::Union{Array, OrdinalRange, Colon} = :,
+                            first_atom_indices::Union{Array, OrdinalRange, Colon} = :,
+                            second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Vector{Matrix{Real}}
+    zip_iterate4frame = zip(eachcol(trj.coordinates[first_atom_indices, frame_indices]),
+                            eachcol(trj.coordinates[second_atom_indices, frame_indices]))
     map(coords_vec_pair -> pair_length_matrix(coords_vec_pair...), zip_iterate4frame)
 end
