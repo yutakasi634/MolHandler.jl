@@ -107,3 +107,17 @@ end
     @test isapprox(Array(center_of_mass(trj, geometric = true, indices = 1:2:3)[2]),
                    [22.1f0, 22.2f0, 22.3f0], atol = 1e-3)
 end
+
+@testset "pair_length_matrix" begin
+    coordinates = prepare_coordinates(3)
+    length_matrix = pair_length_matrix(coordinates[:, 1], coordinates[:, 3])
+    @test size(length_matrix) == (3, 3)
+    @test isapprox(38.1051f0, length_matrix[1, 3], atol = 1e-3)
+
+    trj = Trajectory(coordinates)
+    length_matrices = pair_length_matrix(trj, frame_indices = 1:2,
+                                         first_atom_indices = 1:2:3,
+                                         second_atom_indices = :)
+    @test size(length_matrices[1]) == (2, 3)
+    @test isapprox(34.6410f0, length_matrices[2][2, 1], atol = 1e-3)
+end
