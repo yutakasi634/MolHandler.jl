@@ -1,3 +1,14 @@
+function prepare_coordinates(frame_num::Int64)::Matrix{Coordinate{Float32}}
+    coordinates = Matrix{Coordinate{Float32}}(undef, 3, frame_num)
+    for atom_idx in 1:3, frame_idx in 1:frame_num
+        coordinates[atom_idx, frame_idx] =
+            Coordinate([atom_idx * 10.0f0 + frame_idx * 1.0f0 + 0.1f0,
+                        atom_idx * 10.0f0 + frame_idx * 1.0f0 + 0.2f0,
+                        atom_idx * 10.0f0 + frame_idx * 1.0f0 + 0.3f0])
+    end
+    coordinates
+end
+
 @testset "readdcd function" begin
     trj = readdcd("data/test_position.dcd")
     @test isapprox(Array(trj.coordinates[1,1]),    [15.308, 14.180, -2.955], atol = 1e-3)
@@ -48,13 +59,7 @@ end
 end
 
 @testset "clip_trajectory(query::Integer)" begin
-    coordinates = Matrix{Coordinate{Float32}}(undef, 3, 3)
-    for atom_idx in 1:3, frame_idx in 1:3
-        coordinates[atom_idx, frame_idx] =
-            Coordinate([atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.1f0,
-                        atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.2f0,
-                        atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.3f0])
-    end
+    coordinates = prepare_coordinates(3)
     attributes = [Attribute(atomname = "hoge"), Attribute(atomname = "huga"), Attribute(atomname = "piyo")]
     trj = Trajectory(coordinates, attributes)
 
@@ -69,13 +74,7 @@ end
 end
 
 @testset "clip_trajectory(query::Union{Array, StepRange})" begin
-    coordinates = Matrix{Coordinate{Float32}}(undef, 3, 3)
-    for atom_idx in 1:3, frame_idx in 1:3
-        coordinates[atom_idx, frame_idx] =
-            Coordinate([atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.1f0,
-                        atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.2f0,
-                        atom_idx * 1.0f1 + frame_idx * 1.0f0 + 0.3f0])
-    end
+    coordinates = prepare_coordinates(3)
     attributes = [Attribute(atomname = "hoge"), Attribute(atomname = "huga"), Attribute(atomname = "piyo")]
     trj = Trajectory(coordinates, attributes)
 
@@ -97,13 +96,7 @@ end
 end
 
 @testset "center_of_mass" begin
-    coordinates = Matrix{Coordinate{Float32}}(undef, 3, 3)
-    for atom_idx in 1:3, frame_idx in 1:3
-        coordinates[atom_idx, frame_idx] =
-            Coordinate([atom_idx * 10.0f0 + frame_idx * 1.0f0 + 0.1f0,
-                        atom_idx * 10.0f0 + frame_idx * 1.0f0 + 0.2f0,
-                        atom_idx * 10.0f0 + frame_idx * 1.0f0 + 0.3f0])
-    end
+    coordinates = prepare_coordinates(3)
     attributes = [Attribute(mass = 2.0f0), Attribute(mass = 3.0f0), Attribute(mass = 4.0f0)]
     trj = Trajectory(coordinates, attributes)
     @test isapprox(Array(center_of_mass(trj)[1]), [23.3222f0, 23.4222f0, 23.5222f0], atol = 1e-3)
