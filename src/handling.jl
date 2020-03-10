@@ -133,3 +133,46 @@ function pair_length_matrix(trj::Trajectory;
                             eachcol(trj.coordinates[second_atom_indices, frame_indices]))
     map(coords_vec_pair -> pair_length_matrix(coords_vec_pair...), zip_iterate4frame)
 end
+
+"""
+    contact_bool_matrix(threshold::Real, trj::Trajectory;
+                        frame_indices::Union{Array, OrdinalRange, Colon}       = :,
+                        first_atom_indices::Union{Array, OrdinalRange, Colon}  = :,
+                        second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)
+    ::Vector{Matrix{Bool}}
+
+Judge contact is formed or not. If the distance between two coordinate is shorter than threshold, contact is considered to be formed. In returned vector of matrices, each matrix correspond to contact matrix of each frame.
+You can specify the target frames or atoms by `frame_indices`, `first_atom_indices` or `second_atom_indices`. When you specify the target atoms, the row of matrices corresponds to first_atom_indices and column of matrices corresponds to second_atom_indices.
+"""
+function contact_bool_matrix(threshold::Real, trj::Trajectory;
+                            frame_indices::Union{Array, OrdinalRange, Colon} = :,
+                            first_atom_indices::Union{Array, OrdinalRange, Colon} = :,
+                            second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Vector{Matrix{Bool}}
+    length_mat_arr = pair_length_matrix(trj, frame_indices = frame_indices,
+                                        first_atom_indices = first_atom_indices,
+                                        second_atom_indices = second_atom_indices)
+    map(length_mat_arr) do length_matrix
+        map(length -> length < threshold, length_matrix)
+    end
+end
+
+"""
+    contact_probability_matrix(threshold::Real, trj::Trajectory;
+                               frame_indices::Union{Array, OrdinalRange, Colon}       = :,
+                               first_atom_indices::Union{Array, OrdinalRange, Colon}  = :,
+                               second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)
+    ::Matrix{Real}
+
+Calculate contact formation probability over the trajectory. If the distance between two coordinate is shorter than threshold, contact is considered to be formed.
+You can specify the target frames or atoms by `frame_indices`, `first_atom_indices` or `second_atom_indices`. When you specify the target atoms, the row of matrices corresponds to first_atom_indices and column of matrices corresponds to second_atom_indices.
+"""
+function contact_probability_matrix(threshold::Real, trj::Trajectory;
+                                    frame_indices::Union{Array, OrdinalRange, Colon} = :,
+                                    first_atom_indices::Union{Array, OrdinalRange, Colon} = :,
+                                    second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Matrix{Real}
+    contact_mat_arr = contact_bool_matrix(threshold, trj,
+                                          frame_indices = frame_indices,
+                                          first_atom_indices = first_atom_indices,
+                                          second_atom_indices = second_atom_indices)
+    sum(contact_mat_arr) / length(contact_mat_arr)
+end
