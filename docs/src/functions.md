@@ -16,4 +16,6 @@ readpdb
 get_frame
 get_atom
 clip_trajectory
+center_of_mass
+pair_length_matrix
 ```
