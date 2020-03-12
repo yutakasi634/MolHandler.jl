@@ -3,9 +3,10 @@
 
 Return Trajectory object which filled coordinates, `nframe`, `natom` fields.
 """
-function readdcd(filename::String)::Trajectory
+function readdcd(filename::String; frame_indices::Union{Vector, OrdinalRange, Colon} = :)::Trajectory
 
     coordinates_time_series = Matrix{Coordinate{Float32}}(undef, 0, 0)
+    target_frame_indices = frame_indices
 
     open(filename, "r") do io
         seekend(io)
@@ -53,8 +54,13 @@ function readdcd(filename::String)::Trajectory
         header_size = position(io)
         coordblocksize = (8 + 4 * number_of_atom) * 3
         total_frame = Int64((file_size - header_size) / coordblocksize)
+        if typeof(target_frame_indices) == Colon
+            target_frame_indices = 1:total_frame
+        end
 
-        coordinates_time_series = Matrix{Coordinate{Float32}}(undef, number_of_atom, total_frame)
+        coordinates_time_series =
+            Matrix{Coordinate{Float32}}(undef, number_of_atom, length(target_frame_indices))
+        output_frame_idx = 1
         for frame_idx in 1:total_frame
             # read x coordinates
             skip(io, 4) # skip block size part
@@ -74,8 +80,11 @@ function readdcd(filename::String)::Trajectory
             read!(io, z_coords)
             skip(io, 4) # skip block size part
 
-            atoms = collect(eachrow(hcat(x_coords, y_coords, z_coords)))
-            coordinates_time_series[:, frame_idx] = Coordinate.(atoms)
+            if frame_idx ∈ target_frame_indices
+                atoms = collect(eachrow(hcat(x_coords, y_coords, z_coords)))
+                coordinates_time_series[:, output_frame_idx] = Coordinate.(atoms)
+                output_frame_idx += 1
+            end
         end
     end
     Trajectory(coordinates_time_series)
