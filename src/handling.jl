@@ -130,7 +130,7 @@ The target frame can be restricted by pass indeces vector or range to `frame_ind
 function pair_length_matrix(trj::Trajectory;
                             frame_indices::Union{Array, OrdinalRange, Colon} = :,
                             first_atom_indices::Union{Array, OrdinalRange, Colon} = :,
-                            second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Vector{Matrix{Real}}
+                            second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Vector{Matrix{Float32}}
     zip_iterate4frame = zip(eachcol(trj.coordinates[first_atom_indices, frame_indices]),
                             eachcol(trj.coordinates[second_atom_indices, frame_indices]))
     map(coords_vec_pair -> pair_length_matrix(coords_vec_pair...), zip_iterate4frame)
@@ -148,11 +148,11 @@ Experimental implementation: Multi-threads version of pair_length_matrix. If you
 function pair_length_matrix_parallel(trj::Trajectory;
                                      frame_indices::Union{Array, OrdinalRange, Colon} = :,
                                      first_atom_indices::Union{Array, OrdinalRange, Colon} = :,
-                                     second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Vector{Matrix{Real}}
+                                     second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Vector{Matrix{Float32}}
     first_target_coords  = trj.coordinates[first_atom_indices,  frame_indices]
     second_target_coords = trj.coordinates[second_atom_indices, frame_indices]
     target_frame_num = size(first_target_coords, 2)
-    return_vec = Vector{Matrix{Real}}(undef, target_frame_num)
+    return_vec = Vector{Matrix{Float32}}(undef, target_frame_num)
     Threads.@threads for frame_idx in 1:target_frame_num
         return_vec[frame_idx] =
             pair_length_matrix(first_target_coords[:, frame_idx], second_target_coords[:, frame_idx])
@@ -161,7 +161,7 @@ function pair_length_matrix_parallel(trj::Trajectory;
 end
 
 """
-    contact_bool_matrix(threshold::Real, trj::Trajectory;
+    contact_bool_matrix(threshold::Float32, trj::Trajectory;
                         frame_indices::Union{Array, OrdinalRange, Colon}       = :,
                         first_atom_indices::Union{Array, OrdinalRange, Colon}  = :,
                         second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)
@@ -170,7 +170,7 @@ end
 Judge contact is formed or not. If the distance between two coordinate is shorter than threshold, contact is considered to be formed. In returned vector of matrices, each matrix correspond to contact matrix of each frame.
 You can specify the target frames or atoms by `frame_indices`, `first_atom_indices` or `second_atom_indices`. When you specify the target atoms, the row of matrices corresponds to first_atom_indices and column of matrices corresponds to second_atom_indices.
 """
-function contact_bool_matrix(threshold::Real, trj::Trajectory;
+function contact_bool_matrix(threshold::Float32, trj::Trajectory;
                             frame_indices::Union{Array, OrdinalRange, Colon} = :,
                             first_atom_indices::Union{Array, OrdinalRange, Colon} = :,
                             second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Vector{Matrix{Bool}}
@@ -183,7 +183,7 @@ function contact_bool_matrix(threshold::Real, trj::Trajectory;
 end
 
 """
-    contact_bool_matrix_parallel(threshold::Real, trj::Trajectory;
+    contact_bool_matrix_parallel(threshold::Float32, trj::Trajectory;
                                  frame_indices::Union{Array, OrdinalRange, Colon}       = :,
                                  first_atom_indices::Union{Array, OrdinalRange, Colon}  = :,
                                  second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)
@@ -191,15 +191,17 @@ end
 
 Experimental implementation: Multi-threads version of contact_bool_matrix. If you set available threads number to `Threads.nthreads()`, this function would faster than non-parallel version.
 """
-function contact_bool_matrix_parallel(threshold::Real, trj::Trajectory;
+function contact_bool_matrix_parallel(threshold::Float32, trj::Trajectory;
                                       frame_indices::Union{Array, OrdinalRange, Colon} = :,
                                       first_atom_indices::Union{Array, OrdinalRange, Colon} = :,
                                       second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Vector{Matrix{Bool}}
     length_mat_arr = pair_length_matrix_parallel(trj, frame_indices = frame_indices,
-                                        first_atom_indices = first_atom_indices,
+                                                 first_atom_indices = first_atom_indices,
                                                  second_atom_indices = second_atom_indices)
     target_frame_num = length(length_mat_arr)
-    return_vec = Vector{Matrix{Real}}(undef, target_frame_num)
+    return_vec = Vector{Matrix{Float32}}(undef, target_frame_num)
+    threads_num = Threads.nthreads()
+    iteration_in_thread = Int32(floor(target_frame_num / threads_num))
     Threads.@threads for frame_idx in 1:target_frame_num
         return_vec[frame_idx] = map(length -> length < threshold, length_mat_arr[frame_idx])
     end
@@ -207,19 +209,19 @@ function contact_bool_matrix_parallel(threshold::Real, trj::Trajectory;
 end
 
 """
-    contact_probability_matrix(threshold::Real, trj::Trajectory;
+    contact_probability_matrix(threshold::Float32, trj::Trajectory;
                                frame_indices::Union{Array, OrdinalRange, Colon}       = :,
                                first_atom_indices::Union{Array, OrdinalRange, Colon}  = :,
                                second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)
-    ::Matrix{Real}
+    ::Matrix{Float32}
 
 Calculate contact formation probability over the trajectory. If the distance between two coordinate is shorter than threshold, contact is considered to be formed.
 You can specify the target frames or atoms by `frame_indices`, `first_atom_indices` or `second_atom_indices`. When you specify the target atoms, the row of matrices corresponds to first_atom_indices and column of matrices corresponds to second_atom_indices.
 """
-function contact_probability_matrix(threshold::Real, trj::Trajectory;
+function contact_probability_matrix(threshold::Float32, trj::Trajectory;
                                     frame_indices::Union{Array, OrdinalRange, Colon} = :,
                                     first_atom_indices::Union{Array, OrdinalRange, Colon} = :,
-                                    second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Matrix{Real}
+                                    second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Matrix{Float32}
     contact_mat_arr = contact_bool_matrix(threshold, trj,
                                           frame_indices = frame_indices,
                                           first_atom_indices = first_atom_indices,
@@ -228,18 +230,18 @@ function contact_probability_matrix(threshold::Real, trj::Trajectory;
 end
 
 """
-    contact_probability_matrix_parallel(threshold::Real, trj::Trajectory;
+    contact_probability_matrix_parallel(threshold::Float32, trj::Trajectory;
                                         frame_indices::Union{Array, OrdinalRange, Colon}       = :,
                                         first_atom_indices::Union{Array, OrdinalRange, Colon}  = :,
                                         second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)
-    ::Matrix{Real}
+    ::Matrix{Float32}
 
 Experimental implementation: Multi-threads version of contact_probability_matrix. If you set available threads number to `Threads.nthreads()`, this function would faster than non-parallel version.
 """
-function contact_probability_matrix_parallel(threshold::Real, trj::Trajectory;
-                                    frame_indices::Union{Array, OrdinalRange, Colon} = :,
-                                    first_atom_indices::Union{Array, OrdinalRange, Colon} = :,
-                                    second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Matrix{Real}
+function contact_probability_matrix_parallel(threshold::Float32, trj::Trajectory;
+                                             frame_indices::Union{Array, OrdinalRange, Colon} = :,
+                                             first_atom_indices::Union{Array, OrdinalRange, Colon} = :,
+                                             second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Matrix{Float32}
     contact_mat_arr = contact_bool_matrix_parallel(threshold, trj,
                                                    frame_indices = frame_indices,
                                                    first_atom_indices = first_atom_indices,

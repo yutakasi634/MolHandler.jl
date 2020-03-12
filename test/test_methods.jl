@@ -135,7 +135,7 @@ end
 @testset "contact_bool_matrix" begin
     coordinates = prepare_coordinates(2)
     trj = Trajectory(coordinates)
-    contact_bool_mat_arr = contact_bool_matrix(18.0, trj, first_atom_indices = 1:2, second_atom_indices = 2:3)
+    contact_bool_mat_arr = contact_bool_matrix(18.0f0, trj, first_atom_indices = 1:2, second_atom_indices = 2:3)
 
     @test contact_bool_mat_arr[1][1, 1] == true
     @test contact_bool_mat_arr[2][1, 2] == false
@@ -145,13 +145,13 @@ end
     coordinates = prepare_coordinates(3)
     trj = Trajectory(coordinates)
 
-    @test isapprox(contact_bool_matrix(18.0, trj), contact_bool_matrix_parallel(18.0, trj), atol = 1e-3)
+    @test isapprox(contact_bool_matrix(18.0f0, trj), contact_bool_matrix_parallel(18.0f0, trj), atol = 1e-3)
 end
 
 @testset "contact_probability_matrix" begin
     coordinates = prepare_coordinates(3)
     trj = Trajectory(coordinates)
-    contact_prob_mat = contact_probability_matrix(18.0, trj,
+    contact_prob_mat = contact_probability_matrix(18.0f0, trj,
                                                   frame_indices = 1:2:3,
                                                   first_atom_indices = 1:2,
                                                   second_atom_indices = 2:3)
@@ -165,5 +165,5 @@ end
     coordinates = prepare_coordinates(3)
     trj = Trajectory(coordinates)
 
-    @test isapprox(contact_probability_matrix(18.0, trj), contact_probability_matrix_parallel(18.0, trj), atol = 1e-3)
+    @test isapprox(contact_probability_matrix(18.0f0, trj), contact_probability_matrix_parallel(18.0f0, trj), atol = 1e-3)
 end
