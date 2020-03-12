@@ -21,3 +21,10 @@ pair_length_matrix
 contact_bool_matrix
 contact_probability_matrix
 ```
+
+### Multi-Threading
+```@docs
+pair_length_matrix_parallel
+contact_bool_matrix_parallel
+contact_probability_matrix_parallel
+```

@@ -143,7 +143,7 @@ end
                                 second_atom_indices::Union{Array, OrdinalRange, Colon} = atom_indices1)
     ::Vector{Matrix{Coordinate}}
 
-Experimental implementation: Multi-threads version of pair_length_matrix. If you set available threads number to `Threads.nthreads()`, this function would faster than non-parallel version.
+Multi-threads version of pair_length_matrix. If you set available threads number to `Threads.nthreads()`, this function would faster than non-parallel version.
 """
 function pair_length_matrix_parallel(trj::Trajectory;
                                      frame_indices::Union{Array, OrdinalRange, Colon} = :,
@@ -189,7 +189,7 @@ end
                                  second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)
     ::Vector{Matrix{Bool}}
 
-Experimental implementation: Multi-threads version of contact_bool_matrix. If you set available threads number to `Threads.nthreads()`, this function would faster than non-parallel version.
+Multi-threads version of contact_bool_matrix. If you set available threads number to `Threads.nthreads()`, this function would faster than non-parallel version.
 """
 function contact_bool_matrix_parallel(threshold::Float32, trj::Trajectory;
                                       frame_indices::Union{Array, OrdinalRange, Colon} = :,
@@ -236,7 +236,7 @@ end
                                         second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)
     ::Matrix{Float32}
 
-Experimental implementation: Multi-threads version of contact_probability_matrix. If you set available threads number to `Threads.nthreads()`, this function would faster than non-parallel version.
+Multi-threads version of contact_probability_matrix. If you set available threads number to `Threads.nthreads()`, this function would faster than non-parallel version.
 """
 function contact_probability_matrix_parallel(threshold::Float32, trj::Trajectory;
                                              frame_indices::Union{Array, OrdinalRange, Colon} = :,
