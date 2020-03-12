@@ -7,8 +7,8 @@ Order = [:function]
 
 ## File IO
 ```@docs
-readdcd
-readpdb
+read_dcd
+read_pdb
 ```
 
 ## Trajectory handling

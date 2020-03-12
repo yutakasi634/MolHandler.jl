@@ -9,14 +9,14 @@ function prepare_coordinates(frame_num::Int64)::Matrix{Coordinate{Float32}}
     coordinates
 end
 
-@testset "readdcd function" begin
-    trj = readdcd("data/test_position.dcd")
+@testset "read_dcd function" begin
+    trj = read_dcd("data/test_position.dcd")
     @test isapprox(Array(trj.coordinates[1,1]),    [15.308, 14.180, -2.955], atol = 1e-3)
     @test isapprox(Array(trj.coordinates[5,1001]), [-2.577, 88.384, -7.513], atol = 1e-3)
 end
 
-@testset "readpdb function" begin
-    trj = readpdb("data/1aki.pdb")
+@testset "read_pdb function" begin
+    trj = read_pdb("data/1aki.pdb")
     @test isapprox(Array(trj.coordinates[1,1]), [35.365, 22.342, -11.980], atol = 1e-3)
     @test isapprox(Array(trj.coordinates[1079, 1]), [43.755, 23.843, 8.038], atol = 1e-3)
     @test trj.attributes[123].atomname == "N"

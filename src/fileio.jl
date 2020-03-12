@@ -1,9 +1,9 @@
 """
-    readdcd(filename::String)::Trajectory
+    read_dcd(filename::String)::Trajectory
 
 Return Trajectory object which filled coordinates, `nframe`, `natom` fields.
 """
-function readdcd(filename::String; frame_indices::Union{Vector, OrdinalRange, Colon} = :)::Trajectory
+function read_dcd(filename::String; frame_indices::Union{Vector, OrdinalRange, Colon} = :)::Trajectory
 
     coordinates_time_series = Matrix{Coordinate{Float32}}(undef, 0, 0)
     target_frame_indices = frame_indices
@@ -91,11 +91,11 @@ function readdcd(filename::String; frame_indices::Union{Vector, OrdinalRange, Co
 end
 
 """
-    readpdb(filename::String)::Trajectory
+    read_pdb(filename::String)::Trajectory
 
 Return Trajectory object which filled all field.
 """
-function readpdb(filename::String)::Trajectory
+function read_pdb(filename::String)::Trajectory
     lines = open(filename, "r") do io
         readlines(io)
     end

@@ -2,7 +2,7 @@ module MolHandler
 
 export Coordinate, norm, distance
 export Atom, Attribute, Frame, Trajectory
-export readdcd, readpdb
+export read_dcd, read_pdb
 export get_frame, get_atom, clip_trajectory, center_of_mass, pair_length_matrix, pair_length_matrix_parallel, contact_bool_matrix, contact_bool_matrix_parallel, contact_probability_matrix, contact_probability_matrix_parallel
 
 # codes
