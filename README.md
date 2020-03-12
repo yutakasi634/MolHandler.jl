@@ -6,6 +6,10 @@
 [![Codecov](https://codecov.io/gh/yutakasi634/MolHandler.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/yutakasi634/MolHandler.jl)
 [![Coveralls](https://coveralls.io/repos/github/yutakasi634/MolHandler.jl/badge.svg?branch=master)](https://coveralls.io/github/yutakasi634/MolHandler.jl?branch=master)
 
+## Concept
+This package is for handling Molecular dynamics(MD) trajectory data.
+Supported formats are `dcd` and `pdb`.
+
 ## How to install
 This package assumes julia 1.2.
 ```julia
