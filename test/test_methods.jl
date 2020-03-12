@@ -125,6 +125,13 @@ end
     @test isapprox(34.6410f0, length_matrices[2][2, 1], atol = 1e-3)
 end
 
+@testset "pair_length_matrix_parallel" begin
+    coordinates = prepare_coordinates(3)
+    trj = Trajectory(coordinates)
+
+    @test isapprox(pair_length_matrix(trj), pair_length_matrix_parallel(trj), atol = 1e-3)
+end
+
 @testset "contact_bool_matrix" begin
     coordinates = prepare_coordinates(2)
     trj = Trajectory(coordinates)
@@ -132,6 +139,13 @@ end
 
     @test contact_bool_mat_arr[1][1, 1] == true
     @test contact_bool_mat_arr[2][1, 2] == false
+end
+
+@testset "contact_bool_matrix_parallel" begin
+    coordinates = prepare_coordinates(3)
+    trj = Trajectory(coordinates)
+
+    @test isapprox(contact_bool_matrix(18.0, trj), contact_bool_matrix_parallel(18.0, trj), atol = 1e-3)
 end
 
 @testset "contact_probability_matrix" begin
@@ -145,4 +159,11 @@ end
     @test size(contact_prob_mat) == (2, 2)
     @test isapprox(contact_prob_mat[1, 1], 1.0f0, atol = 1e-3)
     @test isapprox(contact_prob_mat[1, 2], 0.0f0, atol = 1e-3)
+end
+
+@testset "contact_probability_matrix_parallel" begin
+    coordinates = prepare_coordinates(3)
+    trj = Trajectory(coordinates)
+
+    @test isapprox(contact_probability_matrix(18.0, trj), contact_probability_matrix_parallel(18.0, trj), atol = 1e-3)
 end
