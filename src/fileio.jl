@@ -90,6 +90,25 @@ function read_dcd(filename::String; frame_indices::Union{Vector, OrdinalRange, C
     Trajectory(coordinates_time_series)
 end
 
+# function write_dcd(filename::String, trj::Trajectory)
+#     open(filename, "w") do io
+
+#         # write header first block
+#         write(io, Int32(84)) # block size
+#         write(io, "CORD") # signature
+#         write(io, Int32(trj.nframe)) # number of frames
+#         write(io, Int32(0)) # first frame index
+#         write(io, Int32(1)) # nstep_save (provisional value)
+#         write(io, Int32(trj.nframe)) # number of steps (provisional value)
+#         write(io, Int32(1)) # number of units (provisional value)
+#         write(io, zeros(Int32, 4))
+#         write(io, 1.0f0) # time step (provisional value)
+#         write(io, zeros(Int32, 9))
+#         write(io, Int32(24)) # version
+#         write(io, Int32(84)) # block size
+#     end
+# end
+
 """
     read_pdb(filename::String)::Trajectory
 
