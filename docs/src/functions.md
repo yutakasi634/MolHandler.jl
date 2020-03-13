@@ -8,6 +8,7 @@ Order = [:function]
 ## File IO
 ```@docs
 read_dcd
+write_dcd
 read_pdb
 ```
 

@@ -15,6 +15,15 @@ end
     @test isapprox(Array(trj.coordinates[5,1001]), [-2.577, 88.384, -7.513], atol = 1e-3)
 end
 
+@testset "write_dcd function" begin
+    trj = read_dcd("data/test_position.dcd")
+    write_dcd("data/write_test.dcd", trj)
+    writed_trj = read_dcd("data/write_test.dcd")
+    @test trj.nframe == writed_trj.nframe
+    @test trj.natom == writed_trj.natom
+    @test isapprox(trj.coordinates[3, 10].x ,writed_trj.coordinates[3, 10].x, atol = 1e-3)
+end
+
 @testset "read_pdb function" begin
     trj = read_pdb("data/1aki.pdb")
     @test isapprox(Array(trj.coordinates[1,1]), [35.365, 22.342, -11.980], atol = 1e-3)
