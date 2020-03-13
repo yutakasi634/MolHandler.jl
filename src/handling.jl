@@ -238,11 +238,15 @@ function contact_probability_matrix(threshold::Float32, trj::Trajectory;
                                     frame_indices::Union{Array, OrdinalRange, Colon} = :,
                                     first_atom_indices::Union{Array, OrdinalRange, Colon} = :,
                                     second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Matrix{Float32}
-    contact_mat_arr = contact_bool_matrix(threshold, trj,
-                                          frame_indices = frame_indices,
-                                          first_atom_indices = first_atom_indices,
-                                          second_atom_indices = second_atom_indices)
-    sum(contact_mat_arr) / length(contact_mat_arr)
+    first_target_coords  = trj.coordinates[first_atom_indices,  frame_indices]
+    second_target_coords = trj.coordinates[second_atom_indices, frame_indices]
+    target_frame_num = size(first_target_coords, 2)
+    count_mat = zeros(Float32, (size(first_target_coords, 1), size(second_target_coords, 1)))
+    for frame_idx in 1:target_frame_num
+        count_mat +=
+            contact_bool_matrix(threshold, first_target_coords[:, frame_idx], second_target_coords[:, frame_idx])
+    end
+    count_mat / target_frame_num
 end
 
 """
@@ -258,9 +262,17 @@ function contact_probability_matrix_parallel(threshold::Float32, trj::Trajectory
                                              frame_indices::Union{Array, OrdinalRange, Colon} = :,
                                              first_atom_indices::Union{Array, OrdinalRange, Colon} = :,
                                              second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Matrix{Float32}
-    contact_mat_arr = contact_bool_matrix_parallel(threshold, trj,
-                                                   frame_indices = frame_indices,
-                                                   first_atom_indices = first_atom_indices,
-                                                   second_atom_indices = second_atom_indices)
-    sum(contact_mat_arr) / length(contact_mat_arr)
+    first_target_coords  = trj.coordinates[first_atom_indices,  frame_indices]
+    second_target_coords = trj.coordinates[second_atom_indices, frame_indices]
+    target_frame_num = size(first_target_coords, 2)
+    first_atoms_len = size(first_target_coords, 1)
+    second_atoms_len = size(second_target_coords, 1)
+    count_mat_arr =
+        [zeros(Float32, first_atoms_len, second_atoms_len) for thread in 1:Threads.nthreads()]
+    Threads.@threads for frame_idx in 1:target_frame_num
+        count_mat_arr[Threads.threadid()] +=
+            contact_bool_matrix(threshold,
+                                first_target_coords[:, frame_idx], second_target_coords[:, frame_idx])
+    end
+    sum(count_mat_arr) / target_frame_num
 end
