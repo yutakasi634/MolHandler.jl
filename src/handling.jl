@@ -225,6 +225,31 @@ function contact_bool_matrix_parallel(threshold::Float32, trj::Trajectory;
 end
 
 """
+    contact_count_matrix(threshold::Float32, trj::Trajectory;
+                         frame_indices::Union{Array, OrdinalRange, Colon}       = :,
+                         first_atom_indices::Union{Array, OrdinalRange, Colon}  = :,
+                         second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)
+    ::Matrix{Float32}
+
+Calculate contact formation count over the trajectory. If the distance between two coordinate is shorter than threshold, contact is considered to be formed.
+You can specify the target frames or atoms by `frame_indices`, `first_atom_indices` or `second_atom_indices`. When you specify the target atoms, the row of matrices corresponds to first_atom_indices and column of matrices corresponds to second_atom_indices.
+"""
+function contact_count_matrix(threshold::Float32, trj::Trajectory;
+                              frame_indices::Union{Array, OrdinalRange, Colon} = :,
+                              first_atom_indices::Union{Array, OrdinalRange, Colon} = :,
+                              second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Matrix{Float32}
+    first_target_coords  = trj.coordinates[first_atom_indices,  frame_indices]
+    second_target_coords = trj.coordinates[second_atom_indices, frame_indices]
+    target_frame_num = size(first_target_coords, 2)
+    count_mat = zeros(Float32, (size(first_target_coords, 1), size(second_target_coords, 1)))
+    for frame_idx in 1:target_frame_num
+        count_mat +=
+            contact_bool_matrix(threshold, first_target_coords[:, frame_idx], second_target_coords[:, frame_idx])
+    end
+    count_mat
+end
+
+"""
     contact_probability_matrix(threshold::Float32, trj::Trajectory;
                                frame_indices::Union{Array, OrdinalRange, Colon}       = :,
                                first_atom_indices::Union{Array, OrdinalRange, Colon}  = :,
