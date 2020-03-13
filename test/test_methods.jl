@@ -134,6 +134,11 @@ end
 
 @testset "contact_bool_matrix" begin
     coordinates = prepare_coordinates(2)
+    bool_matrix = contact_bool_matrix(20.0f0, coordinates[:, 1], coordinates[:, 2])
+
+    @test size(bool_matrix) == (3, 3)
+    @test bool_matrix == [true true false; true true true; false true true]
+
     trj = Trajectory(coordinates)
     contact_bool_mat_arr = contact_bool_matrix(18.0f0, trj, first_atom_indices = 1:2, second_atom_indices = 2:3)
 
