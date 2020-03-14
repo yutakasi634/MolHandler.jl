@@ -168,8 +168,8 @@ function read_pdb(filename::String)::Trajectory
         readlines(io)
     end
 
-    attributes = []
-    coordinates = []
+    attributes = Vector{Attribute}()
+    coordinates = Vector{Coordinate{Float32}}()
     for line in lines
         if occursin(r"^(ATOM|HETATM)", line)
             atomid   = parse(Int64, line[7:11])

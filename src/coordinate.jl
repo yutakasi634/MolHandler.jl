@@ -9,17 +9,17 @@ This contain 3 fields like below.
 
 Some operators and functions were overloaded to make Coordinate objects broadcastable.
 """
-mutable struct Coordinate{R <: Real}
+mutable struct Coordinate{RealT <: Real}
     # This class is for make vector operation broadcastable.
-    x::R
-    y::R
-    z::R
+    x::RealT
+    y::RealT
+    z::RealT
 
-    function Coordinate(vector::T) where T <: AbstractArray{R} where R <: Real
+    function Coordinate(vector::VectorT) where VectorT <: AbstractArray{RealT} where RealT <: Real
         if length(vector) != 3
             ArgumentError("Argument for Coordinate constructor must be array of length 3")
         end
-        new{R}(vector[1], vector[2], vector[3])
+        new{RealT}(vector[1], vector[2], vector[3])
     end
 end
 

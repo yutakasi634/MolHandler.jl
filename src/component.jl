@@ -58,14 +58,15 @@ The row of coordinates matrix means time series of one atom.
 
 In this case, one snapshot correspond to `[a b c]`.
 """
-mutable struct Trajectory
-    coordinates::Matrix{Coordinate{Float32}}
+mutable struct Trajectory{RealT <: Real}
+    coordinates::Matrix{Coordinate{RealT}}
     attributes::Vector{Attribute}
     natom::Int64
     nframe::Int64
 
-    function Trajectory(coordinates, attributes = [Attribute() for i=1:size(coordinates, 2)])
-        new(coordinates, attributes, size(coordinates, 1), size(coordinates, 2))
+    function Trajectory(coordinates::Matrix{Coordinate{RealT}},
+                        attributes = [Attribute() for i=1:size(coordinates, 2)]) where RealT <: Real
+        new{RealT}(coordinates, attributes, size(coordinates, 1), size(coordinates, 2))
     end
 end
 
@@ -77,12 +78,13 @@ This contains 3 fields like below.
 - attribute   : Vector{[`Attribute`](@ref)}
 - natom       : Number of atoms.
 """
-mutable struct Frame
-    coordinates::Vector{Coordinate{Float32}}
+mutable struct Frame{RealT <: Real}
+    coordinates::Vector{Coordinate{RealT}}
     attributes::Vector{Attribute}
     natom::Int64
 
-    function Frame(coordinates, attributes = [Attribute() for i=1:length(coordinates)])
-        new(coordinates, attributes, length(coordinates))
+    function Frame(coordinates::Vector{Coordinate{RealT}},
+                   attributes = [Attribute() for i=1:length(coordinates)]) where RealT <: Real
+        new{RealT}(coordinates, attributes, length(coordinates))
     end
 end
