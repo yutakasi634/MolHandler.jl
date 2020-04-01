@@ -76,19 +76,21 @@ end
 
 """
     center_of_mass(query::Trajectory;
-                   indices::Union{Array, OrdinalRange, Colon} = :,
+                   frame_indices::Union{Array, OrdinalRange, Colon} = :,
+                   atom_indices::Union{Array, OrdinalRange, Colon} = :,
                    geometric::Bool = false)
     ::Vector{Coordinate{Real}}
 
-Calculate the center of mass of trajectory for specified atom indices.
+Calculate the center of mass of trajectory for specified frame and atom indices.
 If you set `geometric` is `true`, this function calculate geometric center of mass.
 """
 function center_of_mass(trj::Trajectory{RealT};
-                        indices = indices::Union{Array, OrdinalRange, Colon} = :,
-                        geometric = geometric::Bool = false)::Vector{Coordinate{RealT}} where RealT <: Real
+                        frame_indices::Union{Array, OrdinalRange, Colon} = :,
+                        atom_indices::Union{Array, OrdinalRange, Colon} = :,
+                        geometric::Bool = false)::Vector{Coordinate{RealT}} where RealT <: Real
     if !geometric
         mass_vec = map(attributes -> attributes.mass, trj.attributes)
-        selected_mass_vec = mass_vec[indices]
+        selected_mass_vec = mass_vec[atom_indices]
         if Nothing ∈ selected_mass_vec
             error("""
                   center_of_mass: geometric flag is false but attributes of trajectory have Nothing value.
@@ -96,10 +98,10 @@ function center_of_mass(trj::Trajectory{RealT};
                   """)
         end
         total_mass = sum(selected_mass_vec)
-        weited_sum = reshape(selected_mass_vec, (1, length(selected_mass_vec))) * trj.coordinates[indices, :]
+        weited_sum = reshape(selected_mass_vec, (1, length(selected_mass_vec))) * trj.coordinates[atom_indices, frame_indices]
         vec( weited_sum / total_mass)
     else
-        selected_coord = trj.coordinates[indices, :]
+        selected_coord = trj.coordinates[atom_indices, frame_indices]
         vec(sum(selected_coord, dims = 1) / size(selected_coord, 1))
     end
 end
@@ -316,4 +318,17 @@ function contact_probability_matrix_parallel(threshold::RealT1, trj::Trajectory{
                                                   first_atom_indices  = first_atom_indices,
                                                   second_atom_indices = second_atom_indices)
     count_mat_arr / size(trj.coordinates[:,frame_indices], 2)
+end
+
+"""
+    radius_of_gyration(trj::Trajectory;
+                       frame_indices::Union{Array, OrdinalRange, Colon} = :,
+                       atom_indices ::Union{Array, OrdinalRange, Colon} = :)
+    ::Vector{Real}
+
+Calculate radius of gyration over the trajectory.
+"""
+function radius_of_gyration(trj::Trajectory{RealT};
+                            frame_indices::Union{Array, OrdinalRange, Colon} = :,
+                            atom_indices ::Union{Array, OrdinalRange, Colon} = :)::Vector{RealT} where RealT <: Real
 end

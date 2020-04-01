@@ -110,12 +110,17 @@ end
     trj = Trajectory(coordinates, attributes)
 
     @test isapprox(Array(center_of_mass(trj)[1]), [23.3222f0, 23.4222f0, 23.5222f0], atol = 1e-3)
-    @test isapprox(Array(center_of_mass(trj, indices = 1:2:3)[2]), [25.4333f0, 25.5333f0, 25.6333f0],
+    @test isapprox(Array(center_of_mass(trj, atom_indices = 1:2:3)[2]), [25.4333f0, 25.5333f0, 25.6333f0],
                    atol = 1e-3)
+    @test isapprox(Array(center_of_mass(trj, atom_indices = 1:2:3, frame_indices = 2:3)[1]),
+                   [25.4333f0, 25.5333f0, 25.6333f0], atol = 1e-3)
 
     @test isapprox(Array(center_of_mass(trj, geometric = true)[1]), [21.1f0, 21.2f0, 21.3f0], atol = 1e-3)
-    @test isapprox(Array(center_of_mass(trj, geometric = true, indices = 1:2:3)[2]),
+    @test isapprox(Array(center_of_mass(trj, geometric = true, atom_indices = 1:2:3)[2]),
                    [22.1f0, 22.2f0, 22.3f0], atol = 1e-3)
+    @test isapprox(Array(center_of_mass(trj, geometric = true, atom_indices = 1:2:3, frame_indices = 2:3)[1]),
+                   [22.1f0, 22.2f0, 22.3f0], atol = 1e-3)
+
 end
 
 @testset "pair_length_matrix" begin
