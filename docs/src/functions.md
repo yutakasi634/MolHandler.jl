@@ -18,6 +18,7 @@ get_frame
 get_atom
 clip_trajectory
 center_of_mass
+radius_of_gyration
 pair_length_matrix
 contact_bool_matrix
 contact_probability_matrix
