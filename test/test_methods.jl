@@ -186,3 +186,11 @@ end
 
     @test isapprox(contact_probability_matrix(18.0f0, trj), contact_probability_matrix_parallel(18.0f0, trj), atol = 1e-3)
 end
+
+@testset "radius_of_gyration" begin
+    coordinates = prepare_coordinates(3)
+    attributes = [Attribute(mass = 2.0f0), Attribute(mass = 3.0f0), Attribute(mass = 4.0f0)]
+    trj = Trajectory(coordinates, attributes)
+
+    radius_of_gyration(trj, atom_indices = 1:2:3, frame_indices = 1:2:3)
+end
