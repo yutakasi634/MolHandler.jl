@@ -106,6 +106,10 @@ end
 
 @testset "center_of_mass" begin
     coordinates = prepare_coordinates(3)
+    trj_wo_attr = Trajectory(coordinates)
+
+    @test_throws ArgumentError center_of_mass(trj_wo_attr)
+
     attributes = [Attribute(mass = 2.0f0), Attribute(mass = 3.0f0), Attribute(mass = 4.0f0)]
     trj = Trajectory(coordinates, attributes)
 

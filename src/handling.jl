@@ -91,11 +91,11 @@ function center_of_mass(trj::Trajectory{RealT};
     if !geometric
         mass_vec = map(attributes -> attributes.mass, trj.attributes)
         selected_mass_vec = mass_vec[atom_indices]
-        if Nothing ∈ selected_mass_vec
-            error("""
-                  center_of_mass: geometric flag is false but attributes of trajectory have Nothing value.
-                  you can not use mass to calculation.
-                  """)
+        if nothing ∈ selected_mass_vec || length(selected_mass_vec) == 0
+            throw(ArgumentError("""
+                                center_of_mass: geometric flag is false but attributes of trajectory have Nothing value.
+                                you can not use mass to calculation.
+                                """))
         end
         total_mass = sum(selected_mass_vec)
         weited_sum = reshape(selected_mass_vec, (1, length(selected_mass_vec))) * trj.coordinates[atom_indices, frame_indices]
