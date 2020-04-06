@@ -196,5 +196,5 @@ end
     attributes = [Attribute(mass = 2.0f0), Attribute(mass = 3.0f0), Attribute(mass = 4.0f0)]
     trj = Trajectory(coordinates, attributes)
 
-    radius_of_gyration(trj, atom_indices = 1:2:3, frame_indices = 1:2:3)
+    @test isapprox(radius_of_gyration(trj, frame_indices = 1:2:3), [13.608276, 13.608276], atol = 1e-3)
 end

@@ -333,14 +333,14 @@ function radius_of_gyration(trj::Trajectory{RealT};
                             atom_indices ::Union{Array, OrdinalRange, Colon} = :)::Vector{RealT} where RealT <: Real
     com = center_of_mass(trj,
                          frame_indices = frame_indices,
-                         atom_indices = atom_indices,
-                         geometric =true)
+                         atom_indices = atom_indices)
     mass_vec = map(attributes -> attributes.mass, trj.attributes)[atom_indices]
     mass_sum = sum(mass_vec)
+    target_coordinates = trj.coordinates[atom_indices, frame_indices]
     target_frame_num = length(com)
     return_vec = Vector{RealT}(undef, target_frame_num)
     for frame_idx in 1:target_frame_num
-            dist_from_com_vec = norm.(trj.coordinates[atom_indices, frame_idx] .- com[frame_idx])
+            dist_from_com_vec = norm.(target_coordinates[:, frame_idx] .- com[frame_idx])
             return_vec[frame_idx] = (sum(dist_from_com_vec.^2 .* mass_vec) / mass_sum)^(0.5)
     end
     return_vec
