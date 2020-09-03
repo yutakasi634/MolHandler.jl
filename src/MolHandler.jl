@@ -7,9 +7,11 @@ export get_frame, get_atom, clip_trajectory, center_of_mass,
        pair_length_matrix, pair_length_matrix_parallel,
        contact_bool_matrix, contact_bool_matrix_parallel,
        contact_probability_matrix, contact_probability_matrix_parallel,
-       radius_of_gyration
+       radius_of_gyration,
+       atom_mass
 
 # codes
+include("variables.jl")
 include("coordinate.jl")
 include("component.jl")
 include("fileio.jl")

@@ -24,6 +24,11 @@ contact_bool_matrix
 contact_probability_matrix
 ```
 
+## Utility
+```@docs
+atom_mass
+```
+
 ### Multi-Threading
 ```@docs
 pair_length_matrix_parallel

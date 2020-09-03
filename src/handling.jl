@@ -345,3 +345,21 @@ function radius_of_gyration(trj::Trajectory{RealT};
     end
     return_vec
 end
+
+"""
+    atom_mass(name::String)
+    ::Float32
+
+Return mass of the `name` atom.
+"""
+function atom_mass(name::String)::Float32
+    if occursin("^C", name)
+        atomname2mass["C"]
+    elseif occursin("^O", name)
+        atomname2mass["O"]
+    elseif occursin("^N", name)
+        atomname2mass["N"]
+    else
+        atomname2mass[name]
+    end
+end
