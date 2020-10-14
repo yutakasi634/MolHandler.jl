@@ -347,18 +347,26 @@ function radius_of_gyration(trj::Trajectory{RealT};
 end
 
 """
-    atom_mass(name::String)
+    atom_mass(name::AbstractString)
     ::Float32
 
 Return mass of the `name` atom.
+The kind of each atom is judged by PDB format atom names rule.
+https://cdn.rcsb.org/wwpdb/docs/documentation/file-format/PDB_format_1992.pdf
 """
-function atom_mass(name::String)::Float32
-    if occursin("^C", name)
+function atom_mass(name::AbstractString)::Float32
+    if occursin(r"^(H|[1-4]H)", name)
+        atomname2mass["H"]
+    elseif occursin(r"^C", name)
         atomname2mass["C"]
-    elseif occursin("^O", name)
+    elseif occursin(r"^O", name)
         atomname2mass["O"]
-    elseif occursin("^N", name)
+    elseif occursin(r"^N($|[^A]+)", name)
         atomname2mass["N"]
+    elseif occursin(r"^S", name)
+        atomname2mass["S"]
+    elseif occursin(r"^P", name)
+        atomname2mass["P"]
     else
         atomname2mass[name]
     end
