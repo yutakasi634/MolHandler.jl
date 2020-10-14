@@ -159,11 +159,13 @@ function write_dcd(filename::String, trj::Trajectory;
 end
 
 """
-    read_pdb(filename::String)::Trajectory
+    read_pdb(filename::String; model = :unspecified)::Trajectory
 
 Return Trajectory object which filled all field.
+If you set `:AA` to model field, this function set the mass of particle based on atomname field.
+If you set `:CA` to model field, this function set the mass of particcle mase on resname field.
 """
-function read_pdb(filename::String)::Trajectory
+function read_pdb(filename::String; model = :unspecified)::Trajectory
     lines = open(filename, "r") do io
         readlines(io)
     end
@@ -180,8 +182,18 @@ function read_pdb(filename::String)::Trajectory
             y_coord  = parse(Float32, line[39:46])
             z_coord  = parse(Float32, line[47:54])
 
-            push!(attributes, Attribute(resname = resname, resid = resid,
-                                        atomname = atomname, atomid = atomid))
+            if model == :unspecified
+                push!(attributes, Attribute(resname = resname, resid = resid,
+                                            atomname = atomname, atomid = atomid))
+            elseif model == :AA
+                push!(attributes, Attribute(resname = resname, resid = resid,
+                                            atomname = atomname, atomid = atomid,
+                                            mass = atom_mass(atomname)))
+            elseif model == :CA
+                push!(attributes, Attribute(resname = resname, resid = resid,
+                                           atomname = atomname, atomid = atomid,
+                                           mass = residue_mass(resname)))
+            end
             push!(coordinates, Coordinate([x_coord, y_coord, z_coord]))
         end
     end
