@@ -341,7 +341,7 @@ function radius_of_gyration(trj::Trajectory{RealT};
     return_vec = Vector{RealT}(undef, target_frame_num)
     for frame_idx in 1:target_frame_num
             dist_from_com_vec = norm.(target_coordinates[:, frame_idx] .- com[frame_idx])
-            return_vec[frame_idx] = (sum(dist_from_com_vec.^2 .* mass_vec) / mass_sum)^(0.5)
+            return_vec[frame_idx] = sqrt(sum(dist_from_com_vec.^2 .* mass_vec) / mass_sum)
     end
     return_vec
 end
