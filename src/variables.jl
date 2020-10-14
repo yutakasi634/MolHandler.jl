@@ -19,7 +19,8 @@ resname2mass = Dict{String, Float32}(
 "THR" => 101.04768,
 "TRP" => 186.07931,
 "TYR" => 163.06333,
-"VAL" =>  99.06841
+"VAL" =>  99.06841,
+"HOH" =>  18.01528
                                     )
 
 atomname2mass = Dict{String, Float32}(
