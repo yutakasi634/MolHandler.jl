@@ -371,3 +371,14 @@ function atom_mass(name::AbstractString)::Float32
         atomname2mass[name]
     end
 end
+
+"""
+    residue_mass(name::AbstractString)
+    ::Float32
+
+Return mass of the `name` residue.
+The kind of each residue is judged by amino acid 3-letter abbreviation.
+"""
+function residue_mass(name::AbstractString)::Float32
+    resname2mass[name]
+end
