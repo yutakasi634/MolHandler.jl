@@ -22,7 +22,6 @@ julia> using MolHandler
 ```julia
 julia> using MolHandler
 julia> trj = read_dcd("trajectory.dcd")
-julia> #trj = read_pdb("structure.pdb")
 julia> trj.coordinates[:,1] # get first snapshot as Coordinate object array.
 julia> trj.coordinates[1,:] # get first atom coordinate time series by Coordinate object array.
 julia> frame            = get_frame(1, trj)  # get first frame as Frame object.
@@ -48,7 +47,7 @@ julia> write_pdb("com_fixed_1aki.pdb", trj) # output this protein as pdb file.
 ```julia
 julia> using Molhandler
 julia> trj = read_dcd("trajectory.dcd")
-julia> contact_map = contact_probability_matrix_parallel(10.0, trj) # get contact-map which contact threshold is 10.0.
+julia> contact_map = contact_probability_matrix_parallel(10.0, trj) # get contact-map of which contact threshold is 10.0.
 ```
 You have to set the environment variable `JULIA_NUM_THREADS` before excution.
 
