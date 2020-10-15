@@ -38,7 +38,7 @@ julia> trj = read_pdb("1aki.pdb", model = :AA) # read protein as all atom model.
 julia> com = center_of_mass(trj)
 julia> rg  = radius_of_gyration(trj)
 julia> trj.coordinates .-= com # move this protein to origin.
-julia> write_pdb("com_fixed_1aki.pdb", trj)
+julia> write_pdb("com_fixed_1aki.pdb", trj) # output this protein as pdb file.
 ```
 
 ### Support Multi-Threading
