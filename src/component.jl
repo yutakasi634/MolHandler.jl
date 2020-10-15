@@ -65,7 +65,7 @@ mutable struct Trajectory{RealT <: Real}
     nframe::Int64
 
     function Trajectory(coordinates::Matrix{Coordinate{RealT}},
-                        attributes = [Attribute() for i=1:size(coordinates, 2)]) where RealT <: Real
+                        attributes = [Attribute() for i=1:size(coordinates, 1)]) where RealT <: Real
         new{RealT}(coordinates, attributes, size(coordinates, 1), size(coordinates, 2))
     end
 end
