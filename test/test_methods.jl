@@ -58,6 +58,24 @@ end
     @test trj.attributes[123].atomname == writed_trj.attributes[123].atomname
     @test trj.attributes[200].resid    == writed_trj.attributes[200].resid
     @test trj.attributes[231].resname  == writed_trj.attributes[231].resname
+
+    write_pdb("data/write_test.pdb", trj, tempfactor = 0.00)
+    @test isapprox(trj.coordinates[1, 1].x, writed_trj.coordinates[1, 1].x, atol = 1e-3)
+    @test isapprox(trj.coordinates[1079, 1].x, writed_trj.coordinates[1079, 1].x, atol = 1e-3)
+    @test trj.attributes[123].atomname == writed_trj.attributes[123].atomname
+    @test trj.attributes[200].resid    == writed_trj.attributes[200].resid
+    @test trj.attributes[231].resname  == writed_trj.attributes[231].resname
+
+    temp_arr = []
+    open("data/write_test.pdb", "r") do fp
+        for line in eachline(fp)
+            if occursin(r"^ATOM", line)
+                push!(temp_arr, line[63:66])
+            end
+        end
+    end
+    @test temp_arr[5]   == "0.00"
+    @test temp_arr[756] == "0.00"
 end
 
 @testset "get_frame" begin
