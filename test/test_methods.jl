@@ -47,7 +47,17 @@ end
     @test trj.attributes[200].resid == 26
     @test trj.attributes[231].resname == "VAL"
     @test isapprox(trj.attributes[231].mass, 99.06841, atol = 1e-3)
+end
 
+@testset "write_pdb function" begin
+    trj = read_pdb("data/1aki.pdb")
+    write_pdb("data/write_test.pdb", trj)
+    writed_trj = read_pdb("data/write_test.pdb")
+    @test isapprox(trj.coordinates[1, 1].x, writed_trj.coordinates[1, 1].x, atol = 1e-3)
+    @test isapprox(trj.coordinates[1079, 1].x, writed_trj.coordinates[1079, 1].x, atol = 1e-3)
+    @test trj.attributes[123].atomname == writed_trj.attributes[123].atomname
+    @test trj.attributes[200].resid    == writed_trj.attributes[200].resid
+    @test trj.attributes[231].resname  == writed_trj.attributes[231].resname
 end
 
 @testset "get_frame" begin
