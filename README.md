@@ -29,6 +29,9 @@ julia> frame            = get_frame(1, trj)  # get first frame as Frame object.
 julia> atom_time_series = get_atom(1, trj)   # get first atom time series as Atom object array.
 julia> atom             = get_atom(2, frame) # get second atom as Atom object.
 julia> atom.coordinate.x # return x element of atom  coordinate.
+julia> com = center_of_mass(trj, geometric = ture)
+julia> trj.coordinates .-= com[1] # move this trajectory to origin by first frame center of mass.
+julia> write_dcd("com_fixed_trj.dcd", trj) # output this protein as dcd file.
 ```
 
 ### Handling pdb file
