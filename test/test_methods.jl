@@ -21,7 +21,7 @@ end
     writed_trj = read_dcd("data/write_test.dcd")
     @test trj.nframe == writed_trj.nframe
     @test trj.natom == writed_trj.natom
-    @test isapprox(trj.coordinates[3, 10].x ,writed_trj.coordinates[3, 10].x, atol = 1e-3)
+    @test isapprox(trj.coordinates[3, 10].x, writed_trj.coordinates[3, 10].x, atol = 1e-3)
 end
 
 @testset "read_pdb function" begin
