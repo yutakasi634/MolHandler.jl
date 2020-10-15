@@ -382,3 +382,4 @@ The kind of each residue is judged by amino acid 3-letter abbreviation.
 function residue_mass(name::AbstractString)::Float32
     resname2mass[name]
 end
+
