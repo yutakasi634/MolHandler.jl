@@ -47,7 +47,7 @@ julia> write_pdb("com_fixed_1aki.pdb", trj) # output this protein as pdb file.
 ```julia
 julia> using Molhandler
 julia> trj = read_dcd("trajectory.dcd")
-julia> contact_map = contact_probability_matrix_parallel(10.0, trj) # get contact-map who's contact threshold is 10.0.
+julia> contact_map = contact_probability_matrix_parallel(10.0, trj) # get contact-map of which contact threshold is 10.0.
 ```
 You have to set the environment variable `JULIA_NUM_THREADS` before excution.
 
