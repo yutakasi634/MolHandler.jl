@@ -28,6 +28,7 @@ contact_probability_matrix
 ## Utility
 ```@docs
 atom_mass
+residue_mass
 ```
 
 ### Multi-Threading
