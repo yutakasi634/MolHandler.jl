@@ -10,6 +10,7 @@ Order = [:function]
 read_dcd
 write_dcd
 read_pdb
+write_pdb
 ```
 
 ## Trajectory handling

@@ -206,7 +206,7 @@ end
               tempfactor::Union{RealT, Nothing} = nothing) where RealT <: Real
 
 Write `coordinates`, `resname`, `resid`, `atomname`, `atomid` to `filename` based on `trj`.
-If you set Float32 value to `tempfactor`, all tempfactor will be field with that value.
+If you set Real value to `tempfactor`, all tempfactor will be field with that value.
 """
 function write_pdb(filename::AbstractString, trj::Trajectory;
                    tempfactor::Union{RealT, Nothing} = nothing) where RealT <: Real
