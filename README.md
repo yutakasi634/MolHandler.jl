@@ -18,7 +18,7 @@ julia> using MolHandler
 ```
 
 ## Example of use
-### Handling dcd file.
+### Handling dcd file
 ```julia
 julia> using MolHandler
 julia> trj = read_dcd("trajectory.dcd")
@@ -31,7 +31,7 @@ julia> atom             = get_atom(2, frame) # get second atom as Atom object.
 julia> atom.coordinate.x # return x element of atom  coordinate.
 ```
 
-### Handling pdb file.
+### Handling pdb file
 ```julia
 julia> using MolHandler
 julia> trj = read_pdb("1aki.pdb", model = :AA) # read protein as all atom model.
