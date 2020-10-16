@@ -262,3 +262,80 @@ function write_pdb(filename::AbstractString, trj::Trajectory;
         end
     end
 end
+
+"""
+    read_xyz(filename::AbstractString)::Trajectory
+
+Return Trajectory object which filled `coordinates`, `nframe`, `natom` fields.
+"""
+function read_xyz(filename::AbstractString)::Trajectory
+
+    coordinates_time_series = Matrix{Coordinate{Float32}}(undef, 0, 0)
+    attributes              = Vector{Attribute}()
+
+    open(filename, "r") do fp
+        # count number of atom
+        number_of_atom = parse(Int, readline(fp))
+        section_size = number_of_atom + 2
+
+        # read atomname info
+        readline(fp) # skip comment line
+        for atom_idx in 1:number_of_atom
+            atomname = split(readline(fp))[1]
+            push!(attributes, Attribute(atomname = atomname))
+        end
+
+        # count number of frame
+        seekstart(fp)
+        line_num = countlines(fp)
+        number_of_frame = div(line_num, section_size)
+
+        # read coordinate
+        coordinates_time_series =
+            Matrix{Coordinate{Float32}}(undef, number_of_atom, number_of_frame)
+
+        seekstart(fp)
+        for frame_idx in 1:number_of_frame
+            # skip number of atom and comment line
+            for i in 1:2
+                readline(fp)
+            end
+            for atom_idx in 1:number_of_atom
+                line_elems = split(readline(fp))
+                coord = Coordinate(map(c->parse(Float32, c), view(line_elems, 2:4)))
+                coordinates_time_series[atom_idx, frame_idx] = coord
+            end
+        end
+    end
+    Trajectory(coordinates_time_series, attributes)
+end
+
+"""
+    write_xyz(filename:AbstractString, trj::Trajectory)
+
+Write `coordinates`, `nframe` and `natom` information of `trj` to xyz file, named `filename`.
+"""
+function write_xyz(filename::AbstractString, trj::Trajectory)
+    atomname_arr = Vector{String}()
+    for attr in trj.attributes
+        if attr.atomname == nothing
+            push!(atomname_arr, "UNK")
+        else
+            push!(atomname_arr, attr.atomname)
+        end
+    end
+
+    natom = trj.natom
+    open(filename, "w") do io
+        for frame_idx in 1:trj.nframe
+            write(io, string(natom)*"\n")
+            write(io, "\n")
+            for (atomname, coord) in zip(atomname_arr, view(trj.coordinates, :, frame_idx))
+                x_coord_str = Printf.@sprintf("%.7f", coord.x)
+                y_coord_str = Printf.@sprintf("%.7f", coord.y)
+                z_coord_str = Printf.@sprintf("%.7f", coord.z)
+                write(io, atomname*" "*x_coord_str*" "*y_coord_str*" "*z_coord_str*"\n")
+            end
+        end
+    end
+end
