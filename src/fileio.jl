@@ -98,7 +98,7 @@ end
               save_step::Integer = 1, total_step::Integer = trj.nframe,
               unit_num::Integer  = 1,  time_step::Real = 1.0f0)
 
-Write `coordinates`, `nframe` and `natom` infomation of `trj` to dcd file, named `filename`.
+Write `coordinates`, `nframe` and `natom` information of `trj` to dcd file, named `filename`.
 dcd file contain other information - save interval step, unit(chain) number in the system, total step and time step of original trajectory -, and if you do not specify these parameter, these are filled with default value.
 """
 function write_dcd(filename::String, trj::Trajectory;
