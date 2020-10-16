@@ -78,6 +78,28 @@ end
     @test temp_arr[756] == "0.00"
 end
 
+@testset "read_xyz function" begin
+    trj = read_xyz("data/test_position.xyz")
+    @test isapprox(Array(trj.coordinates[1, 1]),    [15.308, 14.180, -2.955], atol = 1e-3)
+    @test isapprox(Array(trj.coordinates[5, 1001]), [-2.577, 88.384, -7.513], atol = 1e-3)
+    @test trj.attributes[3].atomname == "CA"
+end
+
+@testset "write_xyz function" begin
+    trj = read_xyz("data/test_position.xyz")
+    write_xyz("data/write_test.xyz", trj)
+    writed_trj = read_xyz("data/write_test.xyz")
+    @test trj.nframe == writed_trj.nframe
+    @test trj.natom  == writed_trj.natom
+    @test writed_trj.attributes[3].atomname == trj.attributes[3].atomname
+    @test isapprox(trj.coordinates[3, 10].x, writed_trj.coordinates[3, 10].x, atol = 1e-3)
+
+    trj = read_dcd("data/test_position.dcd")
+    write_xyz("data/write_test.xyz", trj)
+    writed_trj = read_xyz("data/write_test.xyz")
+    @test writed_trj.attributes[3].atomname == "UNK"
+end
+
 @testset "get_frame" begin
     coordinates = Matrix{Coordinate{Float32}}(undef, 2, 2)
     coordinates[1,1] = Coordinate([1.1f0, 1.2f0, 1.3f0])
