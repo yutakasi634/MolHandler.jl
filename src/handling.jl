@@ -49,12 +49,12 @@ function clip_trajectory(query::IntT where IntT <: Integer, trj::Trajectory{Real
     elseif query_key == :atom
         Trajectory(reshape(trj.coordinates[query, :], (1, trj.nframe)), [trj.attributes[query]])
     else
-        error("""
-              clip_trajectory: invalid query key :$(query_key) here
-              expected query key is one of the following.
-              - :frame
-              - :atom
-              """)
+        throw(ArgumentError("""
+                            clip_trajectory: invalid query key :$(query_key) here
+                            expected query key is one of the following.
+                            - :frame
+                            - :atom
+                            """))
     end
 end
 
@@ -65,12 +65,12 @@ function clip_trajectory(query::Union{Array{IntT, 1}, OrdinalRange}, trj::Trajec
     elseif query_key == :atom
         Trajectory(trj.coordinates[query, :], trj.attributes[query])
     else
-        error("""
-              clip_trajectory: invalid query key :$(query_key) here
-              expected query key is one of the following.
-              - :frame
-              - :atom
-              """)
+        throw(ArgumentError("""
+                            clip_trajectory: invalid query key :$(query_key) here
+                            expected query key is one of the following.
+                            - :frame
+                            - :atom
+                            """))
     end
 end
 
