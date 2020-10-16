@@ -11,6 +11,8 @@ read_dcd
 write_dcd
 read_pdb
 write_pdb
+read_xyz
+write_xyz
 ```
 
 ## Trajectory handling
