@@ -8,7 +8,7 @@
 
 ## Concept
 Simple and intuitive package for handling Molecular dynamics(MD) trajectory data.
-Supported formats are `dcd` and `pdb`.
+Supported formats are `xyz`, `pdb` and `dcd`.
 
 ## How to install
 This package assumes julia 1.2.
