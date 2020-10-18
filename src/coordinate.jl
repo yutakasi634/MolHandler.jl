@@ -1,4 +1,4 @@
-import Base: +, -, *, /, length, iterate, zero, Array
+import Base: +, -, *, /, length, iterate, zero, convert, Array
 """
 This correspond to coordinate of atom.
 This contain 3 fields like below.
@@ -62,6 +62,10 @@ end
 
 function zero(arg::Coordinate{T}) where T <: Real
     Coordinate([T(0.0) T(0.0) T(0.0)])
+end
+
+function convert(::Type{Coordinate{RealT}}, coord::Coordinate{<:Real}) where RealT <: Real
+    return Coordinate([RealT(coord.x) RealT(coord.y) RealT(coord.z)])
 end
 
 function Array(arg::Coordinate{T}) where T <: Real
