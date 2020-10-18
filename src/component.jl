@@ -42,7 +42,7 @@ end
 This struct corresponding to MD trajectory.
 This contains 4 fields like below.
 
-- coordinates : Matrix{[`Coordinate`](@ref)}
+- coordinates : AbstractArray{[`Coordinate`](@ref), 2}
 - attributes  : Vector{[`Attribute`](@ref)}
 - natom       : Number of atoms.
 - nframe      : Number of frames in the trajectory.
