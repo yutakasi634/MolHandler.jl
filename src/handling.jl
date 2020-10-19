@@ -172,8 +172,8 @@ end
 Judge contact is formed or not. If the distance between two coordinate is shorter than threshold, contact is considered to be formed. In returned matrix, the row of matrices corresponds to first_atom_indices and column of matrices corresponds to second_atom_indices.
 """
 function contact_bool_matrix(threshold::RealT,
-                             first_coords::AbstractArray{Coordinate{RealT}, 1},
-                             second_coords::AbstractArray{Coordinate{RealT}, 1})::Matrix{Bool} where RealT <: Real
+                             first_coords::AbstractArray{<:Coordinate, 1},
+                             second_coords::AbstractArray{<:Coordinate, 1})::Matrix{Bool} where RealT <: Real
     length_matrix = pair_length_matrix(first_coords, second_coords)
     map(length -> length < threshold, length_matrix)
 end
