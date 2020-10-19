@@ -263,5 +263,32 @@ end
     attributes = [Attribute(mass = 2.0f0), Attribute(mass = 3.0f0), Attribute(mass = 4.0f0)]
     trj = Trajectory(coordinates, attributes)
 
-    @test isapprox(radius_of_gyration(trj, frame_indices = 1:2:3), [13.608276, 13.608276], atol = 1e-3)
+    rg_arr     = Array{Float32, 1}(undef, 3)
+    geo_rg_arr = Array{Float32, 1}(undef, 3)
+    for frame_idx in 1:size(coordinates, 2)
+        # com calculation
+        com     = Coordinate([0.0, 0.0, 0.0])
+        geo_com = Coordinate([0.0, 0.0, 0.0])
+        for atom_idx in 1:size(coordinates, 1)
+            com     += coordinates[atom_idx, frame_idx] * attributes[atom_idx].mass
+            geo_com += coordinates[atom_idx, frame_idx]
+        end
+        com     /= sum([attr.mass for attr in attributes])
+        geo_com /= size(coordinates, 1)
+
+        # rg calculation
+        rg     = 0.0
+        geo_rg = 0.0
+        for atom_idx in 1:size(coordinates, 1)
+            rg     += norm(coordinates[atom_idx, frame_idx] - com)^2 * attributes[atom_idx].mass
+            geo_rg += norm(coordinates[atom_idx, frame_idx] - geo_com)^2
+        end
+        rg     = sqrt(rg     / sum([attr.mass for attr in attributes]))
+        geo_rg = sqrt(geo_rg / size(coordinates, 1))
+        rg_arr[frame_idx]     = rg
+        geo_rg_arr[frame_idx] = geo_rg
+    end
+
+    @test isapprox(radius_of_gyration(trj, frame_indices = 1:2:3),                   rg_arr[1:2:3],     atol = 1e-3)
+    @test isapprox(radius_of_gyration(trj, frame_indices = 1:2:3, geometric = true), geo_rg_arr[1:2:3], atol = 1e-3)
 end
