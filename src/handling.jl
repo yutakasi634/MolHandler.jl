@@ -323,10 +323,12 @@ end
 """
     radius_of_gyration(trj::Trajectory;
                        frame_indices::Union{Array, OrdinalRange, Colon} = :,
-                       atom_indices ::Union{Array, OrdinalRange, Colon} = :)
+                       atom_indices ::Union{Array, OrdinalRange, Colon} = :,
+                       geometric::Bool = false)
     ::Vector{Real}
 
 Calculate radius of gyration over the trajectory.
+If you set `geometric` is `true`, this function calculate radius of gyration without mass info.
 """
 function radius_of_gyration(trj::Trajectory{RealT};
                             frame_indices::Union{Array, OrdinalRange, Colon} = :,
