@@ -151,13 +151,13 @@ function pair_length_matrix_parallel(trj::Trajectory{RealT};
                                      frame_indices::Union{Array, OrdinalRange, Colon} = :,
                                      first_atom_indices::Union{Array, OrdinalRange, Colon} = :,
                                      second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Vector{Matrix{RealT}} where RealT <: Real
-    first_target_coords  = trj.coordinates[first_atom_indices,  frame_indices]
-    second_target_coords = trj.coordinates[second_atom_indices, frame_indices]
+    first_target_coords  = view(trj.coordinates, first_atom_indices,  frame_indices)
+    second_target_coords = view(trj.coordinates, second_atom_indices, frame_indices)
     target_frame_num = size(first_target_coords, 2)
     return_vec = Vector{Matrix{Float32}}(undef, target_frame_num)
     Threads.@threads for frame_idx in 1:target_frame_num
         return_vec[frame_idx] =
-            pair_length_matrix(first_target_coords[:, frame_idx], second_target_coords[:, frame_idx])
+            pair_length_matrix(view(first_target_coords, :, frame_idx), view(second_target_coords, :, frame_idx))
     end
     return_vec
 end
@@ -240,13 +240,13 @@ function contact_count_matrix(threshold::RealT1, trj::Trajectory{RealT2};
                               frame_indices::Union{Array, OrdinalRange, Colon} = :,
                               first_atom_indices::Union{Array, OrdinalRange, Colon} = :,
                               second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Matrix{RealT2} where {RealT1 <: Real, RealT2 <: Real}
-    first_target_coords  = trj.coordinates[first_atom_indices,  frame_indices]
-    second_target_coords = trj.coordinates[second_atom_indices, frame_indices]
+    first_target_coords  = view(trj.coordinates, first_atom_indices,  frame_indices)
+    second_target_coords = view(trj.coordinates, second_atom_indices, frame_indices)
     target_frame_num = size(first_target_coords, 2)
     count_mat = zeros(RealT2, (size(first_target_coords, 1), size(second_target_coords, 1)))
     for frame_idx in 1:target_frame_num
         count_mat +=
-            contact_bool_matrix(threshold, first_target_coords[:, frame_idx], second_target_coords[:, frame_idx])
+            contact_bool_matrix(threshold, view(first_target_coords, :, frame_idx), view(second_target_coords, :, frame_idx))
     end
     count_mat
 end
@@ -264,8 +264,8 @@ function contact_count_matrix_parallel(threshold::RealT1, trj::Trajectory{RealT2
                                        frame_indices::Union{Array, OrdinalRange, Colon} = :,
                                        first_atom_indices::Union{Array, OrdinalRange, Colon} = :,
                                        second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)::Matrix{RealT2} where {RealT1 <: Real, RealT2 <: Real}
-    first_target_coords  = trj.coordinates[first_atom_indices,  frame_indices]
-    second_target_coords = trj.coordinates[second_atom_indices, frame_indices]
+    first_target_coords  = view(trj.coordinates, first_atom_indices,  frame_indices)
+    second_target_coords = view(trj.coordinates, second_atom_indices, frame_indices)
     target_frame_num = size(first_target_coords, 2)
     first_atoms_len = size(first_target_coords, 1)
     second_atoms_len = size(second_target_coords, 1)
@@ -274,7 +274,7 @@ function contact_count_matrix_parallel(threshold::RealT1, trj::Trajectory{RealT2
     Threads.@threads for frame_idx in 1:target_frame_num
         count_mat_arr[Threads.threadid()] +=
             contact_bool_matrix(threshold,
-                                first_target_coords[:, frame_idx], second_target_coords[:, frame_idx])
+                                view(first_target_coords, :, frame_idx), view(second_target_coords, :, frame_idx))
     end
     sum(count_mat_arr)
 end
@@ -297,7 +297,7 @@ function contact_probability_matrix(threshold::RealT1, trj::Trajectory{RealT2};
                                     frame_indices       = frame_indices,
                                     first_atom_indices  = first_atom_indices,
                                     second_atom_indices = second_atom_indices)
-    count_mat / size(trj.coordinates[:, frame_indices], 2)
+    count_mat / size(view(trj.coordinates, :, frame_indices), 2)
 end
 
 """
@@ -317,7 +317,7 @@ function contact_probability_matrix_parallel(threshold::RealT1, trj::Trajectory{
                                                   frame_indices       = frame_indices,
                                                   first_atom_indices  = first_atom_indices,
                                                   second_atom_indices = second_atom_indices)
-    count_mat_arr / size(trj.coordinates[:,frame_indices], 2)
+    count_mat_arr / size(view(trj.coordinates, :,frame_indices), 2)
 end
 
 """
@@ -351,8 +351,7 @@ function radius_of_gyration(trj::Trajectory{RealT};
         for frame_idx in 1:target_frame_num
             return_vec[frame_idx] = sqrt(sum(view(dist_from_com_vec, :, frame_idx).^2 .* mass_vec) / mass_sum)
         end
-    else
-        target_atom_num = size(target_coordinates)[1]
+    else target_atom_num = size(target_coordinates)[1]
         for frame_idx in 1:target_frame_num
             return_vec[frame_idx] = sqrt(sum(view(dist_from_com_vec, :, frame_idx).^2) / target_atom_num)
         end
