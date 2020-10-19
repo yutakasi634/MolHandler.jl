@@ -90,7 +90,7 @@ function center_of_mass(trj::Trajectory{RealT};
                         geometric::Bool = false)::Vector{Coordinate{RealT}} where RealT <: Real
     if !geometric
         mass_vec = map(attributes -> attributes.mass, trj.attributes)
-        selected_mass_vec = mass_vec[atom_indices]
+        selected_mass_vec = view(mass_vec, atom_indices)
         if nothing ∈ selected_mass_vec || length(selected_mass_vec) == 0
             throw(ArgumentError("""
                                 center_of_mass: geometric flag is false but attributes of trajectory have Nothing value.
@@ -98,10 +98,10 @@ function center_of_mass(trj::Trajectory{RealT};
                                 """))
         end
         total_mass = sum(selected_mass_vec)
-        weited_sum = reshape(selected_mass_vec, (1, length(selected_mass_vec))) * trj.coordinates[atom_indices, frame_indices]
-        vec( weited_sum / total_mass)
+        weited_sum = reshape(selected_mass_vec, (1, length(selected_mass_vec))) * view(trj.coordinates, atom_indices, frame_indices)
+        vec(weited_sum / total_mass)
     else
-        selected_coord = trj.coordinates[atom_indices, frame_indices]
+        selected_coord = view(trj.coordinates, atom_indices, frame_indices)
         vec(sum(selected_coord, dims = 1) / size(selected_coord, 1))
     end
 end
@@ -339,22 +339,22 @@ function radius_of_gyration(trj::Trajectory{RealT};
                          atom_indices  = atom_indices,
                          geometric     = geometric)
 
-    target_coordinates = trj.coordinates[atom_indices, frame_indices]
+    target_coordinates = view(trj.coordinates, atom_indices, frame_indices)
     target_frame_num = length(com)
     return_vec = Vector{RealT}(undef, target_frame_num)
 
     dist_from_com_vec = norm.(target_coordinates .- permutedims(com))
 
     if !geometric
-        mass_vec = map(attributes -> attributes.mass, trj.attributes)[atom_indices]
+        mass_vec = map(attributes -> attributes.mass, view(trj.attributes, atom_indices))
         mass_sum = sum(mass_vec)
         for frame_idx in 1:target_frame_num
-            return_vec[frame_idx] = sqrt(sum(dist_from_com_vec[:, frame_idx].^2 .* mass_vec) / mass_sum)
+            return_vec[frame_idx] = sqrt(sum(view(dist_from_com_vec, :, frame_idx).^2 .* mass_vec) / mass_sum)
         end
     else
         target_atom_num = size(target_coordinates)[1]
         for frame_idx in 1:target_frame_num
-            return_vec[frame_idx] = sqrt(sum(dist_from_com_vec[:, frame_idx].^2) / target_atom_num)
+            return_vec[frame_idx] = sqrt(sum(view(dist_from_com_vec, :, frame_idx).^2) / target_atom_num)
         end
     end
     return_vec
