@@ -56,7 +56,7 @@ function read_dcd(filename::String; frame_indices::Union{Vector, OrdinalRange, C
         # read body block
         header_size = position(io)
         coordblocksize = (8 + 4 * number_of_atom) * 3
-        total_frame = Int32((file_size - header_size) / coordblocksize)
+        total_frame = Int32(floor((file_size - header_size) / coordblocksize))
         if typeof(target_frame_indices) == Colon
             target_frame_indices = 1:total_frame
         end
