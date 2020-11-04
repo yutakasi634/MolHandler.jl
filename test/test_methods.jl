@@ -293,6 +293,19 @@ end
     @test isapprox(radius_of_gyration(trj, frame_indices = 1:2:3, geometric = true), geo_rg_arr[1:2:3], atol = 1e-3)
 end
 
+@testset "atom_mass" begin
+    @test isapprox(atom_mass("HB3"), 1.00798, atol = 1e-5)
+    @test isapprox(atom_mass("CA"),  12.0106, atol = 1e-5)
+    @test isapprox(atom_mass("NB"),  14.0069, atol = 1e-5)
+    @test isapprox(atom_mass("NA"),  22.9898, atol = 1e-5)
+    @test isapprox(atom_mass("CL"),  35.4520, atol = 1e-5)
+end
+
+@testset "residue_mass" begin
+    @test isapprox(residue_mass("ALA"), 71.03711, atol = 1e-5)
+    @test isapprox(residue_mass("HOH"), 18.01528, atol = 1e-5)
+end
+
 @testset "distance_pbc" begin
     first_coord  = Coordinate([1.0, 2.0, 2.0])
     second_coord = Coordinate([2.5, 2.0, 2.0])
