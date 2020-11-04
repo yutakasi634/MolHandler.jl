@@ -292,3 +292,15 @@ end
     @test isapprox(radius_of_gyration(trj, frame_indices = 1:2:3),                   rg_arr[1:2:3],     atol = 1e-3)
     @test isapprox(radius_of_gyration(trj, frame_indices = 1:2:3, geometric = true), geo_rg_arr[1:2:3], atol = 1e-3)
 end
+
+@testset "distance_pbc" begin
+    first_coord  = Coordinate([1.0, 2.0, 2.0])
+    second_coord = Coordinate([2.5, 2.0, 2.0])
+    third_coord  = Coordinate([3.5, 2.0, 2.0])
+    first_second =
+        distance_pbc(first_coord, second_coord, Coordinate([0.0, 0.0, 0.0]), Coordinate([4.0, 4.0, 4.0]))
+    first_third  =
+        distance_pbc(first_coord, third_coord,  Coordinate([0.0, 0.0, 0.0]), Coordinate([4.0, 4.0, 4.0]))
+    @test isapprox(first_second, 1.5, atol = 1e-3)
+    @test isapprox(first_third,  1.5, atol = 1e-3)
+end

@@ -1,4 +1,5 @@
 import Base.Threads
+import LinearAlgebra
 
 """
     get_frame(frame_idx::Int64, trajectory::Trajectory)
@@ -394,4 +395,19 @@ The kind of each residue is judged by amino acid 3-letter abbreviation.
 """
 function residue_mass(name::AbstractString)::Float32
     resname2mass[name]
+end
+
+"""
+    distance_pdc(first_atom::Coordinate,  second_atom::Coordinate,
+                 lower_bound::Coordinate, upper_bound::Coordinate)
+    ::Real
+"""
+function distance_pbc(first_coord::Coordinate{RealT},  second_coord::Coordinate{RealT},
+                      lower_bound::Coordinate{<:Real}, upper_bound::Coordinate{<:Real})::RealT where RealT <: Real
+    box_vec  = upper_bound - lower_bound
+    dist_vec = first_coord  - second_coord
+    x = abs(dist_vec.x) < box_vec.x * 0.5 ? dist_vec.x : box_vec.x - abs(dist_vec.x)
+    y = abs(dist_vec.y) < box_vec.y * 0.5 ? dist_vec.y : box_vec.y - abs(dist_vec.y)
+    z = abs(dist_vec.z) < box_vec.z * 0.5 ? dist_vec.z : box_vec.z - abs(dist_vec.z)
+    LinearAlgebra.norm([x, y, z])
 end
