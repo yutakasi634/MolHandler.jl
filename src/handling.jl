@@ -371,7 +371,7 @@ https://cdn.rcsb.org/wwpdb/docs/documentation/file-format/PDB_format_1992.pdf
 function atom_mass(name::AbstractString)::Float32
     if occursin(r"^(H|[1-4]H)", name)
         atomname2mass["H"]
-    elseif occursin(r"^C", name)
+    elseif occursin(r"^C($|[^L]+)", name)
         atomname2mass["C"]
     elseif occursin(r"^O", name)
         atomname2mass["O"]
