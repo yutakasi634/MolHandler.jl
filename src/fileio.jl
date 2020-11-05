@@ -7,11 +7,12 @@ import Printf
 Return Trajectory object which filled `coordinates`, `nframe`, `natom` fields.
 """
 function read_dcd(filename::String; frame_indices::Union{Vector, OrdinalRange, Colon} = :)::Trajectory
-
     coordinates_time_series = Matrix{Coordinate{Float32}}(undef, 0, 0)
     target_frame_indices = frame_indices
 
     open(filename, "r") do io
+        unitcell_flag = false # for charmm format
+
         seekend(io)
         file_size = position(io) # get file size
         seekstart(io)
@@ -32,6 +33,9 @@ function read_dcd(filename::String; frame_indices::Union{Vector, OrdinalRange, C
         time_step  = read(io, Float32)
         header_null_9 = Array{Int32, 1}(undef, 9)
         read!(io, header_null_9)
+        if header_null_9[1] != 0
+            unitcell_flag = true
+        end
         version   = read(io, Int32)
         skip(io, 4) # skip block size part
 
@@ -55,8 +59,11 @@ function read_dcd(filename::String; frame_indices::Union{Vector, OrdinalRange, C
 
         # read body block
         header_size = position(io)
-        coordblocksize = (8 + 4 * number_of_atom) * 3
-        total_frame = Int32(floor((file_size - header_size) / coordblocksize))
+        stepblocksize = (8 + 4 * number_of_atom) * 3
+        if unitcell_flag
+            stepblocksize += 56 # add unitcell block size (4 + 8 * 6 + 4)
+        end
+        total_frame = Int32(floor((file_size - header_size) / stepblocksize))
         if typeof(target_frame_indices) == Colon
             target_frame_indices = 1:total_frame
         end
@@ -65,6 +72,11 @@ function read_dcd(filename::String; frame_indices::Union{Vector, OrdinalRange, C
             Matrix{Coordinate{Float32}}(undef, number_of_atom, length(target_frame_indices))
         output_frame_idx = 1
         for frame_idx in 1:total_frame
+            # skip unitcell block
+            if unitcell_flag
+                skip(io, 56) # skip unitcell block size (4 + 8 * 6 + 4)
+            end
+
             # read x coordinates
             skip(io, 4) # skip block size part
             x_coords = Array{Float32, 1}(undef, number_of_atom)
