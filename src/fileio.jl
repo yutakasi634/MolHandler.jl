@@ -2,9 +2,12 @@ import Dates
 import Printf
 
 """
-    read_dcd(filename::String)::Trajectory
+    read_dcd(filename::String;
+             frame_indices::Union{Vector, OrdinalRange, Colon} = :)
+    ::Trajectory
 
 Return Trajectory object which filled `coordinates`, `nframe`, `natom` fields.
+If you set frame_indices, only specified frame is read.
 """
 function read_dcd(filename::String; frame_indices::Union{Vector, OrdinalRange, Colon} = :)::Trajectory
     coordinates_time_series = Matrix{Coordinate{Float32}}(undef, 0, 0)
