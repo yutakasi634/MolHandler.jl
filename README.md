@@ -7,7 +7,7 @@
 [![Coveralls](https://coveralls.io/repos/github/yutakasi634/MolHandler.jl/badge.svg?branch=master)](https://coveralls.io/github/yutakasi634/MolHandler.jl?branch=master)
 
 ## Concept
-Simple and intuitive package for handling Molecular dynamics(MD) trajectory data.
+Simple and intuitive package for handling Molecular dynamics trajectory data.
 Supported formats are `xyz`, `pdb` and `dcd`.
 
 ## How to install
