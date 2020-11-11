@@ -47,6 +47,8 @@ end
     @test trj.attributes[200].resid == 26
     @test trj.attributes[231].resname == "VAL"
     @test isapprox(trj.attributes[231].mass, 99.06841, atol = 1e-3)
+
+    #TODO: test for multi frame pdb
 end
 
 @testset "write_pdb function" begin

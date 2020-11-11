@@ -188,32 +188,42 @@ function read_pdb(filename::AbstractString; model = :unspecified)::Trajectory
 
     attributes = Vector{Attribute}()
     coordinates = Vector{Coordinate{Float32}}()
+    first_frame = true
     for line in lines
         if occursin(r"^(ATOM|HETATM)", line)
-            atomid   = parse(Int64, line[7:11])
-            atomname = strip(line[13:16])
-            resname  = strip(line[18:20])
-            resid    = parse(Int64, line[23:26])
             x_coord  = parse(Float32, line[31:38])
             y_coord  = parse(Float32, line[39:46])
             z_coord  = parse(Float32, line[47:54])
-
-            if model == :unspecified
-                push!(attributes, Attribute(resname = resname, resid = resid,
-                                            atomname = atomname, atomid = atomid))
-            elseif model == :AA
-                push!(attributes, Attribute(resname = resname, resid = resid,
-                                            atomname = atomname, atomid = atomid,
-                                            mass = atom_mass(atomname)))
-            elseif model == :CA
-                push!(attributes, Attribute(resname = resname, resid = resid,
-                                           atomname = atomname, atomid = atomid,
-                                           mass = residue_mass(resname)))
-            end
             push!(coordinates, Coordinate([x_coord, y_coord, z_coord]))
+
+            if first_frame
+                atomid   = parse(Int64, line[7:11])
+                atomname = strip(line[13:16])
+                resname  = strip(line[18:20])
+                resid    = parse(Int64, line[23:26])
+
+                if model == :unspecified
+                    push!(attributes, Attribute(resname = resname, resid = resid,
+                                                atomname = atomname, atomid = atomid))
+                elseif model == :AA
+                    push!(attributes, Attribute(resname = resname, resid = resid,
+                                                atomname = atomname, atomid = atomid,
+                                                mass = atom_mass(atomname)))
+                elseif model == :CA
+                    push!(attributes, Attribute(resname = resname, resid = resid,
+                                               atomname = atomname, atomid = atomid,
+                                               mass = residue_mass(resname)))
+                end
+            end
+        elseif occursin(r"^END", line) && first_frame
+            first_frame = false
         end
     end
-    Trajectory(reshape(coordinates, (length(coordinates), 1) ), attributes)
+
+    atom_num  = length(attributes)
+    @assert mod(length(coordinates), atom_num) == 0 "All frame should contain same number atoms."
+    frame_num = div(length(coordinates), atom_num)
+    Trajectory(reshape(coordinates, (atom_num, frame_num)), attributes)
 end
 
 """
