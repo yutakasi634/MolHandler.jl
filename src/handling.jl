@@ -134,6 +134,7 @@ function pair_length_matrix(trj::Trajectory{RealT};
                             frame_indices::Union{Vector, OrdinalRange, Colon} = :,
                             first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
                             second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices)::Vector{Matrix{RealT}} where RealT <: Real
+    # TODO: change to view style
     zip_iterate4frame = zip(eachcol(trj.coordinates[first_atom_indices, frame_indices]),
                             eachcol(trj.coordinates[second_atom_indices, frame_indices]))
     map(coords_vec_pair -> pair_length_matrix(coords_vec_pair...), zip_iterate4frame)
