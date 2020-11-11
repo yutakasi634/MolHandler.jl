@@ -283,7 +283,7 @@ function write_pdb(filename::AbstractString, trj::Trajectory;
                       x_coord_str*y_coord_str*z_coord_str*"      "*tempfactor_str*"\n")
             end
             write(io, "TER\n")
-            write(io, "ENDMDL\n")
+            write(io, "END\n")
         end
     end
 end
