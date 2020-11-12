@@ -11,7 +11,7 @@ Simple and intuitive package for handling Molecular dynamics trajectory data.
 Supported formats are `xyz`, `pdb` and `dcd`.
 
 ## How to install
-This package assumes julia 1.2.
+Julia version 1.2 are supported.
 ```julia
 pkg> add https://github.com/yutakasi634/MolHandler.jl.git
 julia> using MolHandler
