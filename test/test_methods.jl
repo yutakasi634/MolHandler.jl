@@ -48,7 +48,12 @@ end
     @test trj.attributes[231].resname == "VAL"
     @test isapprox(trj.attributes[231].mass, 99.06841, atol = 1e-3)
 
-    #TODO: test for multi frame pdb
+    # test for multi frame pdb case
+    trj = read_pdb("data/test_position.pdb")
+    @test trj.nframe == 1001
+    @test trj.natom  == 5
+    @test isapprox(Array(trj.coordinates[1,   1]), [15.308, 14.180, -2.955], atol = 1e-3)
+    @test isapprox(Array(trj.coordinates[5,1001]), [-2.578, 88.385, -7.513] ,atol = 1e-3)
 end
 
 @testset "write_pdb function" begin
