@@ -68,6 +68,7 @@ function convert(::Type{Coordinate{RealT}}, coord::Coordinate{<:Real}) where Rea
     return Coordinate([RealT(coord.x) RealT(coord.y) RealT(coord.z)])
 end
 
+#TODO: implement for Vector
 function Array(arg::Coordinate{T}) where T <: Real
     [arg.x, arg.y, arg.z]
 end
