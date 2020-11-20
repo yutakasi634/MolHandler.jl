@@ -13,6 +13,10 @@ end
     trj = read_dcd("data/test_position.dcd")
     @test isapprox(Array(trj.coordinates[1,1]),    [15.308, 14.180, -2.955], atol = 1e-3)
     @test isapprox(Array(trj.coordinates[5,1001]), [-2.577, 88.384, -7.513], atol = 1e-3)
+
+    trj_step = read_dcd("data/test_position.dcd", frame_indices = 1:10:1001)
+    @test isapprox(Array(trj_step.coordinates[1,  1]), Array(trj.coordinates[1,    1]), atol = 1e-3)
+    @test isapprox(Array(trj_step.coordinates[5,101]), Array(trj.coordinates[5, 1001]), atol = 1e-3)
 end
 
 @testset "write_dcd function" begin
