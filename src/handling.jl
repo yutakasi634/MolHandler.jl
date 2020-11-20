@@ -402,3 +402,25 @@ function distance_pbc(first_coord::Coordinate{RealT},  second_coord::Coordinate{
     z = abs(dist_vec.z) < box_vec.z * 0.5 ? dist_vec.z : box_vec.z - abs(dist_vec.z)
     LinearAlgebra.norm([x, y, z])
 end
+
+function fix_pbc!(trj::Trajectory{RealT},
+                 lower_bound::Coordinate{RealT}, upper_bound::Coordinate{RealT}) where RealT <: Real
+    # fix atom in over pbc residue based on first atom of the residue
+    box_coord = upper_bound - lower_bound
+    half_box_coord = box_coord * 0.5
+
+    resid_vec  = map(attr->attr.resid, trj.attributes)
+    unique_resid_vec = unique(resid_vec)
+    coordinates = trj.coordinates
+    attributes  = trj.attributes
+    for resid in unique_resid_vec
+        same_mol_indices = findall(id->id==resid, resid_vec)
+        @views sbj_coords = coordinates[same_mol_indices[2:end], :]
+        @views dist2first_mat = sbj_coords .- permutedims(coordinates[same_mol_indices[1], :])
+        for (coord, dist) in zip(sbj_coords, dist2first_mat)
+            coord.x = abs(dist.x) < half_box_coord.x ? coord.x : coord.x - sign(dist.x) * box_coord.x
+            coord.y = abs(dist.y) < half_box_coord.y ? coord.y : coord.y - sign(dist.y) * box_coord.y
+            coord.z = abs(dist.z) < half_box_coord.z ? coord.z : coord.z - sign(dist.z) * box_coord.z
+        end
+    end
+end
