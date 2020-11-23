@@ -328,3 +328,8 @@ end
     @test isapprox(first_second, 1.5, atol = 1e-3)
     @test isapprox(first_third,  1.5, atol = 1e-3)
 end
+
+@testset "fix_pbc!" begin
+    dcd = read_dcd("data/test_position.dcd")
+    @test_nowarn fix_pbc!(dcd, Coordinate([0.0f0, 0.0f0, 0.0f0]), Coordinate([10.0f0, 10.0f0, 10.0f0]))
+end
