@@ -390,19 +390,19 @@ https://cdn.rcsb.org/wwpdb/docs/documentation/file-format/PDB_format_1992.pdf
 """
 function atom_mass(name::AbstractString)::Float32
     if occursin(r"^(H|[1-4]H)", name)
-        atomname2mass["H"]
+        ATOMNAME2MASS["H"]
     elseif occursin(r"^C($|[^L]+)", name)
-        atomname2mass["C"]
+        ATOMNAME2MASS["C"]
     elseif occursin(r"^O", name)
-        atomname2mass["O"]
+        ATOMNAME2MASS["O"]
     elseif occursin(r"^N($|[^A]+)", name)
-        atomname2mass["N"]
+        ATOMNAME2MASS["N"]
     elseif occursin(r"^S", name)
-        atomname2mass["S"]
+        ATOMNAME2MASS["S"]
     elseif occursin(r"^P", name)
-        atomname2mass["P"]
+        ATOMNAME2MASS["P"]
     else
-        atomname2mass[name]
+        ATOMNAME2MASS[name]
     end
 end
 
@@ -414,7 +414,7 @@ Return mass of the `name` residue.
 The kind of each residue is judged by amino acid 3-letter abbreviation.
 """
 function residue_mass(name::AbstractString)::Float32
-    resname2mass[name]
+    RESNAME2MASS[name]
 end
 
 """

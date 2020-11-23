@@ -1,5 +1,5 @@
 # reference from https://www.bioinfor.com/amino-acid/
-const resname2mass = Dict{String, Float32}(
+const RESNAME2MASS = Dict{String, Float32}(
 "ALA" =>  71.03711,
 "ARG" => 156.10111,
 "ASN" => 114.04293,
@@ -23,7 +23,7 @@ const resname2mass = Dict{String, Float32}(
 "HOH" =>  18.01528
                                     )
 
-const atomname2mass = Dict{String, Float32}(
+const ATOMNAME2MASS = Dict{String, Float32}(
 "H"  => 1.00798,
 "C"  => 12.0106,
 "N"  => 14.0069,
