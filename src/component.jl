@@ -17,7 +17,8 @@ mutable struct Attribute
     mass::Union{Float32, Nothing}
 
     function Attribute(;resname = nothing, resid = nothing,
-                       atomname = nothing, atomid = nothing, mass = nothing)
+        atomname = nothing, atomid = nothing, mass = nothing)
+
         new(resname, resid, atomname, atomid, mass)
     end
 end
@@ -65,7 +66,9 @@ mutable struct Trajectory{RealT <: Real}
     nframe::Int64
 
     function Trajectory(coordinates::Array{<:Coordinate{RealT}},
-                        attributes::Array{Attribute, 1} = [Attribute() for i=1:size(coordinates, 1)]) where RealT <: Real
+        attributes::Array{Attribute, 1} = [Attribute() for i=1:size(coordinates, 1)]
+        ) where RealT <: Real
+
         new{RealT}(coordinates, attributes, size(coordinates, 1), size(coordinates, 2))
     end
 end
@@ -84,7 +87,9 @@ mutable struct Frame{RealT <: Real}
     natom::Int64
 
     function Frame(coordinates::Vector{Coordinate{RealT}},
-                   attributes = [Attribute() for i=1:length(coordinates)]) where RealT <: Real
+        attributes::Array{Attribute, 1} = [Attribute() for i=1:length(coordinates)]
+        ) where RealT <: Real
+
         new{RealT}(coordinates, attributes, length(coordinates))
     end
 end

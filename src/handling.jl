@@ -7,7 +7,9 @@ import LinearAlgebra
 
 Return Frame object which correspond to `framd_idx` frame from `trajectory`.
 """
-function get_frame(frame_idx::IntT, trj::Trajectory{RealT})::Frame where {IntT <: Integer, RealT <: Real}
+function get_frame(frame_idx::IntT, trj::Trajectory{RealT}
+    )::Frame where {IntT <: Integer, RealT <: Real}
+
     Frame(trj.coordinates[:,frame_idx], trj.attributes)
 end
 
@@ -44,7 +46,9 @@ Expected query key is one of the following
 - `:atom`  : in this case, query specify the atom index.
 """
 function clip_trajectory(query::IntT, trj::Trajectory{RealT};
-                         query_key = query_key::Symbol = :frame)::Trajectory{RealT} where {IntT <: Integer, RealT <: Real}
+    query_key = query_key::Symbol = :frame
+    )::Trajectory{RealT} where {IntT <: Integer, RealT <: Real}
+
     if query_key == :frame
         Trajectory(reshape(trj.coordinates[:, query], (trj.natom, 1)), trj.attributes)
     elseif query_key == :atom
@@ -60,7 +64,9 @@ function clip_trajectory(query::IntT, trj::Trajectory{RealT};
 end
 
 function clip_trajectory(query::Union{Vector{IntT}, OrdinalRange}, trj::Trajectory{RealT};
-                         query_key::Symbol = :frame)::Trajectory{RealT} where {IntT <: Integer, RealT <: Real}
+    query_key::Symbol = :frame
+    )::Trajectory{RealT} where {IntT <: Integer, RealT <: Real}
+
     if query_key == :frame
         Trajectory(trj.coordinates[:, query], trj.attributes)
     elseif query_key == :atom
@@ -86,9 +92,10 @@ Calculate the center of mass of trajectory for specified frame and atom indices.
 If you set `geometric` is `true`, this function calculate geometric center of mass.
 """
 function center_of_mass(trj::Trajectory{RealT};
-                        frame_indices::Union{Vector, OrdinalRange, Colon} = :,
-                        atom_indices::Union{Vector, OrdinalRange, Colon} = :,
-                        geometric::Bool = false)::Vector{Coordinate{RealT}} where RealT <: Real
+    frame_indices::Union{Vector, OrdinalRange, Colon} = :,
+    atom_indices::Union{Vector, OrdinalRange, Colon} = :,
+    geometric::Bool = false)::Vector{Coordinate{RealT}} where RealT <: Real
+
     if !geometric
         mass_vec = map(attributes -> attributes.mass, trj.attributes)
         selected_mass_vec = view(mass_vec, atom_indices)
@@ -115,7 +122,9 @@ Calculate distance matrix for all combination between `coords1` and `coord2`.
 The row of returned matrix coresspond to `coords1`, and the column correspond to `coords2`.
 """
 function pair_length_matrix(first_coords::AbstractArray{Coordinate{RealT}, 1},
-                            second_coords::AbstractArray{Coordinate{RealT}, 1})::Matrix{RealT} where RealT <: Real
+    second_coords::AbstractArray{Coordinate{RealT}, 1}
+    )::Matrix{RealT} where RealT <: Real
+
     distance.(first_coords, reshape(second_coords, (1, length(second_coords))))
 end
 
@@ -131,9 +140,11 @@ This cauculation apply to each frame of trajectory and the result matrices are s
 The target frame can be restricted by pass indeces vector or range to `frame_indices`.
 """
 function pair_length_matrix(trj::Trajectory{RealT};
-                            frame_indices::Union{Vector, OrdinalRange, Colon} = :,
-                            first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
-                            second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices)::Vector{Matrix{RealT}} where RealT <: Real
+    frame_indices::Union{Vector, OrdinalRange, Colon} = :,
+    first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
+    second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices
+    )::Vector{Matrix{RealT}} where RealT <: Real
+
     zip_iterate4frame = zip(eachcol(view(trj.coordinates, first_atom_indices, frame_indices)),
                             eachcol(view(trj.coordinates, second_atom_indices, frame_indices)))
     map(coords_vec_pair -> pair_length_matrix(coords_vec_pair...), zip_iterate4frame)
@@ -149,9 +160,11 @@ end
 Multi-threads version of pair_length_matrix. If you set available threads number to `Threads.nthreads()`, this function would faster than non-parallel version.
 """
 function pair_length_matrix_parallel(trj::Trajectory{RealT};
-                                     frame_indices::Union{Vector, OrdinalRange, Colon} = :,
-                                     first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
-                                     second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices)::Vector{Matrix{RealT}} where RealT <: Real
+    frame_indices::Union{Vector, OrdinalRange, Colon} = :,
+    first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
+    second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices
+    )::Vector{Matrix{RealT}} where RealT <: Real
+
     first_target_coords  = view(trj.coordinates, first_atom_indices,  frame_indices)
     second_target_coords = view(trj.coordinates, second_atom_indices, frame_indices)
     target_frame_num = size(first_target_coords, 2)
@@ -174,16 +187,20 @@ Judge contact is formed or not. If the distance between two coordinate is shorte
 You can specify the target frames or atoms by `frame_indices`, `first_atom_indices` or `second_atom_indices`. When you specify the target atoms, the row of matrices corresponds to first_atom_indices and column of matrices corresponds to second_atom_indices.
 """
 function contact_bool_matrix(threshold::RealT,
-                             first_coords::AbstractArray{<:Coordinate, 1},
-                             second_coords::AbstractArray{<:Coordinate, 1})::Matrix{Bool} where RealT <: Real
+    first_coords::AbstractArray{<:Coordinate, 1},
+    second_coords::AbstractArray{<:Coordinate, 1}
+    )::Matrix{Bool} where RealT <: Real
+
     length_matrix = pair_length_matrix(first_coords, second_coords)
     map(length -> length < threshold, length_matrix)
 end
 
 function contact_bool_matrix(threshold::RealT1, trj::Trajectory{RealT2};
-                            frame_indices::Union{Vector, OrdinalRange, Colon} = :,
-                            first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
-                            second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices)::Vector{Matrix{Bool}} where {RealT1 <: Real, RealT2 <: Real}
+    frame_indices::Union{Vector, OrdinalRange, Colon} = :,
+    first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
+    second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices
+    )::Vector{Matrix{Bool}} where {RealT1 <: Real, RealT2 <: Real}
+
     length_mat_arr = pair_length_matrix(trj, frame_indices = frame_indices,
                                         first_atom_indices = first_atom_indices,
                                         second_atom_indices = second_atom_indices)
@@ -202,9 +219,11 @@ end
 Multi-threads version of contact_bool_matrix. If you set available threads number to `Threads.nthreads()`, this function would faster than non-parallel version.
 """
 function contact_bool_matrix_parallel(threshold::RealT1, trj::Trajectory{RealT2};
-                                      frame_indices::Union{Vector, OrdinalRange, Colon} = :,
-                                      first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
-                                      second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices)::Vector{Matrix{Bool}} where {RealT1 <: Real, RealT2 <: Real}
+    frame_indices::Union{Vector, OrdinalRange, Colon} = :,
+    first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
+    second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices
+    )::Vector{Matrix{Bool}} where {RealT1 <: Real, RealT2 <: Real}
+
     length_mat_arr = pair_length_matrix_parallel(trj, frame_indices = frame_indices,
                                                  first_atom_indices = first_atom_indices,
                                                  second_atom_indices = second_atom_indices)
@@ -229,9 +248,11 @@ Calculate contact formation count over the trajectory. If the distance between t
 You can specify the target frames or atoms by `frame_indices`, `first_atom_indices` or `second_atom_indices`. When you specify the target atoms, the row of matrices corresponds to first_atom_indices and column of matrices corresponds to second_atom_indices.
 """
 function contact_count_matrix(threshold::RealT1, trj::Trajectory{RealT2};
-                              frame_indices::Union{Vector, OrdinalRange, Colon} = :,
-                              first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
-                              second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices)::Matrix{RealT2} where {RealT1 <: Real, RealT2 <: Real}
+    frame_indices::Union{Vector, OrdinalRange, Colon} = :,
+    first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
+    second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices
+    )::Matrix{RealT2} where {RealT1 <: Real, RealT2 <: Real}
+
     first_target_coords  = view(trj.coordinates, first_atom_indices,  frame_indices)
     second_target_coords = view(trj.coordinates, second_atom_indices, frame_indices)
     target_frame_num = size(first_target_coords, 2)
@@ -253,9 +274,11 @@ end
 Multi-threads version of contact_count_matrix. If you set available threads number to `Threads.nthreads()`, this function would faster than non-parallel version.
 """
 function contact_count_matrix_parallel(threshold::RealT1, trj::Trajectory{RealT2};
-                                       frame_indices::Union{Vector, OrdinalRange, Colon} = :,
-                                       first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
-                                       second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices)::Matrix{RealT2} where {RealT1 <: Real, RealT2 <: Real}
+    frame_indices::Union{Vector, OrdinalRange, Colon} = :,
+    first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
+    second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices
+    )::Matrix{RealT2} where {RealT1 <: Real, RealT2 <: Real}
+
     first_target_coords  = view(trj.coordinates, first_atom_indices,  frame_indices)
     second_target_coords = view(trj.coordinates, second_atom_indices, frame_indices)
     target_frame_num = size(first_target_coords, 2)
@@ -282,9 +305,11 @@ Calculate contact formation probability over the trajectory. If the distance bet
 You can specify the target frames or atoms by `frame_indices`, `first_atom_indices` or `second_atom_indices`. When you specify the target atoms, the row of matrices corresponds to first_atom_indices and column of matrices corresponds to second_atom_indices.
 """
 function contact_probability_matrix(threshold::RealT1, trj::Trajectory{RealT2};
-                                    frame_indices::Union{Vector, OrdinalRange, Colon} = :,
-                                    first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
-                                    second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices)::Matrix{RealT2} where {RealT1 <: Real, RealT2 <: Real}
+    frame_indices::Union{Vector, OrdinalRange, Colon} = :,
+    first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
+    second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices
+    )::Matrix{RealT2} where {RealT1 <: Real, RealT2 <: Real}
+
     count_mat= contact_count_matrix(threshold, trj,
                                     frame_indices       = frame_indices,
                                     first_atom_indices  = first_atom_indices,
@@ -302,9 +327,11 @@ end
 Multi-threads version of contact_probability_matrix. If you set available threads number to `Threads.nthreads()`, this function would faster than non-parallel version.
 """
 function contact_probability_matrix_parallel(threshold::RealT1, trj::Trajectory{RealT2};
-                                             frame_indices::Union{Vector, OrdinalRange, Colon} = :,
-                                             first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
-                                             second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices)::Matrix{RealT2} where {RealT1 <: Real, RealT2 <: Real}
+    frame_indices::Union{Vector, OrdinalRange, Colon} = :,
+    first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
+    second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices
+    )::Matrix{RealT2} where {RealT1 <: Real, RealT2 <: Real}
+
     count_mat_arr = contact_count_matrix_parallel(threshold, trj,
                                                   frame_indices       = frame_indices,
                                                   first_atom_indices  = first_atom_indices,
@@ -323,9 +350,11 @@ Calculate radius of gyration over the trajectory.
 If you set `geometric` is `true`, this function calculate radius of gyration without mass info.
 """
 function radius_of_gyration(trj::Trajectory{RealT};
-                            frame_indices::Union{Vector, OrdinalRange, Colon} = :,
-                            atom_indices ::Union{Vector, OrdinalRange, Colon} = :,
-                            geometric::Bool = false)::Vector{RealT} where RealT <: Real
+             frame_indices::Union{Vector, OrdinalRange, Colon} = :,
+             atom_indices ::Union{Vector, OrdinalRange, Colon} = :,
+             geometric::Bool = false
+             )::Vector{RealT} where RealT <: Real
+
     com = center_of_mass(trj,
                          frame_indices = frame_indices,
                          atom_indices  = atom_indices,
@@ -394,7 +423,9 @@ end
     ::Real
 """
 function distance_pbc(first_coord::Coordinate{RealT},  second_coord::Coordinate{RealT},
-                      lower_bound::Coordinate{<:Real}, upper_bound::Coordinate{<:Real})::RealT where RealT <: Real
+    lower_bound::Coordinate{<:Real}, upper_bound::Coordinate{<:Real}
+    )::RealT where RealT <: Real
+
     box_vec  = upper_bound - lower_bound
     dist_vec = first_coord  - second_coord
     x = abs(dist_vec.x) < box_vec.x * 0.5 ? dist_vec.x : box_vec.x - abs(dist_vec.x)
@@ -404,7 +435,9 @@ function distance_pbc(first_coord::Coordinate{RealT},  second_coord::Coordinate{
 end
 
 function fix_pbc!(trj::Trajectory{RealT},
-                 lower_bound::Coordinate{RealT}, upper_bound::Coordinate{RealT}) where RealT <: Real
+    lower_bound::Coordinate{RealT}, upper_bound::Coordinate{RealT}
+    ) where RealT <: Real
+
     # TODO: remove side effect
     # fix atom in over pbc residue based on first atom of the residue
     box_coord = upper_bound - lower_bound

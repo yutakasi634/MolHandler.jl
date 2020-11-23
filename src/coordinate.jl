@@ -15,7 +15,9 @@ mutable struct Coordinate{RealT <: Real}
     y::RealT
     z::RealT
 
-    function Coordinate(vector::VectorT) where VectorT <: AbstractArray{RealT} where RealT <: Real
+    function Coordinate(vector::VectorT
+        ) where VectorT <: AbstractArray{RealT} where RealT <: Real
+
         if length(vector) != 3
             ArgumentError("Argument for Coordinate constructor must be array of length 3")
         end

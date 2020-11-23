@@ -117,8 +117,9 @@ Write `coordinates`, `nframe` and `natom` information of `trj` to dcd file, name
 dcd file contain other information - save interval step, unit(chain) number in the system, total step and time step of original trajectory -, and if you do not specify these parameter, these are filled with default value.
 """
 function write_dcd(filename::String, trj::Trajectory;
-                   save_step::Integer = 1, total_step::Integer = trj.nframe,
-                   unit_num::Integer = 1, time_step::Real = 1.0f0)
+    save_step::Integer = 1, total_step::Integer = trj.nframe,
+    unit_num::Integer = 1, time_step::Real = 1.0f0)
+
     open(filename, "w") do io
 
         # write header first block
@@ -234,7 +235,8 @@ Write `coordinates`, `resname`, `resid`, `atomname`, `atomid` to `filename` base
 If you set Real value to `tempfactor`, all tempfactor will be field with that value.
 """
 function write_pdb(filename::AbstractString, trj::Trajectory;
-                   tempfactor::Union{RealT, Nothing} = nothing) where RealT <: Real
+    tempfactor::Union{RealT, Nothing} = nothing) where RealT <: Real
+
     attributes = trj.attributes
     #  check attributes of trj have sufficient information.
     if any(attr->attr.resname==nothing, attributes)
