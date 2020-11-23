@@ -59,13 +59,13 @@ The row of coordinates matrix means time series of one atom.
 In this case, one snapshot correspond to `[a b c]`.
 """
 mutable struct Trajectory{RealT <: Real}
-    coordinates::AbstractArray{Coordinate{RealT}, 2}
+    coordinates::Array{Coordinate{RealT}}
     attributes::Vector{Attribute}
     natom::Int64
     nframe::Int64
 
-    function Trajectory(coordinates::AbstractArray{Coordinate{RealT}, 2},
-                        attributes::AbstractArray{Attribute, 1} = [Attribute() for i=1:size(coordinates, 1)]) where RealT <: Real
+    function Trajectory(coordinates::Array{<:Coordinate{RealT}},
+                        attributes::Array{Attribute, 1} = [Attribute() for i=1:size(coordinates, 1)]) where RealT <: Real
         new{RealT}(coordinates, attributes, size(coordinates, 1), size(coordinates, 2))
     end
 end
