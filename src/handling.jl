@@ -405,6 +405,7 @@ end
 
 function fix_pbc!(trj::Trajectory{RealT},
                  lower_bound::Coordinate{RealT}, upper_bound::Coordinate{RealT}) where RealT <: Real
+    # TODO: remove side effect
     # fix atom in over pbc residue based on first atom of the residue
     box_coord = upper_bound - lower_bound
     half_box_coord = box_coord * 0.5
