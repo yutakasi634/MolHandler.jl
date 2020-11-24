@@ -67,7 +67,7 @@ function zero(arg::Coordinate{T}) where T <: Real
 end
 
 function convert(::Type{Coordinate{RealT}}, coord::Coordinate{<:Real}) where RealT <: Real
-    return Coordinate([RealT(coord.x) RealT(coord.y) RealT(coord.z)])
+    return Coordinate([RealT(coord.x), RealT(coord.y), RealT(coord.z)])
 end
 
 function Vector(arg::Coordinate{RealT}) where RealT <: Real
