@@ -23,22 +23,26 @@ mutable struct Coordinate{RealT <: Real}
         end
         new{RealT}(vector[1], vector[2], vector[3])
     end
+
+    function Coordinate(x::RealT, y::RealT, z::RealT) where RealT <: Real
+        new{RealT}(x, y, z)
+    end
 end
 
 function +(arg1::Coordinate{T}, arg2::Coordinate{U}) where T <: Real where U <: Real
-    Coordinate([arg1.x + arg2.x, arg1.y + arg2.y, arg1.z + arg2.z])
+    Coordinate(arg1.x + arg2.x, arg1.y + arg2.y, arg1.z + arg2.z)
 end
 
 function -(arg1::Coordinate{T}, arg2::Coordinate{U}) where T <: Real where U <: Real
-    Coordinate([arg1.x - arg2.x, arg1.y - arg2.y, arg1.z - arg2.z])
+    Coordinate(arg1.x - arg2.x, arg1.y - arg2.y, arg1.z - arg2.z)
 end
 
 function *(arg1::Coordinate{T}, arg2::U) where T <: Real where U <: Real
-    Coordinate([arg1.x * arg2, arg1.y * arg2, arg1.z * arg2])
+    Coordinate(arg1.x * arg2, arg1.y * arg2, arg1.z * arg2)
 end
 
 function *(arg1::U, arg2::Coordinate{T}) where T <: Real where U <: Real
-    Coordinate([arg1 * arg2.x, arg1 * arg2.y, arg1 * arg2.z])
+    Coordinate(arg1 * arg2.x, arg1 * arg2.y, arg1 * arg2.z)
 end
 
 function *(arg1::Coordinate{T}, arg2::Coordinate{U}) where T <: Real where U <: Real
@@ -46,7 +50,7 @@ function *(arg1::Coordinate{T}, arg2::Coordinate{U}) where T <: Real where U <: 
 end
 
 function /(arg1::Coordinate{T}, arg2::U) where T <: Real where U <: Real
-    Coordinate([arg1.x / arg2, arg1.y / arg2, arg1.z / arg2])
+    Coordinate(arg1.x / arg2, arg1.y / arg2, arg1.z / arg2)
 end
 
 # for operator broadcast
@@ -63,11 +67,11 @@ function iterate(arg::Coordinate{T}, nothing) where T <: Real
 end
 
 function zero(arg::Coordinate{T}) where T <: Real
-    Coordinate([T(0.0) T(0.0) T(0.0)])
+    Coordinate(T(0.0), T(0.0), T(0.0))
 end
 
 function convert(::Type{Coordinate{RealT}}, coord::Coordinate{<:Real}) where RealT <: Real
-    return Coordinate([RealT(coord.x), RealT(coord.y), RealT(coord.z)])
+    return Coordinate(RealT(coord.x), RealT(coord.y), RealT(coord.z))
 end
 
 function Vector(arg::Coordinate{RealT}) where RealT <: Real

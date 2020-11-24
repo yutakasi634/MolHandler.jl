@@ -195,8 +195,7 @@ function read_pdb(filename::AbstractString; model = :unspecified)::Trajectory
             x_coord  = parse(Float32, line[31:38])
             y_coord  = parse(Float32, line[39:46])
             z_coord  = parse(Float32, line[47:54])
-            push!(coordinates, Coordinate([x_coord, y_coord, z_coord]))
-
+            push!(coordinates, Coordinate(x_coord, y_coord, z_coord))
             if first_frame
                 atomid   = parse(Int64, line[7:11])
                 atomname = strip(line[13:16])
