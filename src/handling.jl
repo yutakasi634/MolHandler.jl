@@ -431,7 +431,7 @@ function distance_pbc(first_coord::Coordinate{RealT},  second_coord::Coordinate{
     x = abs(dist_vec.x) < box_vec.x * 0.5 ? dist_vec.x : box_vec.x - abs(dist_vec.x)
     y = abs(dist_vec.y) < box_vec.y * 0.5 ? dist_vec.y : box_vec.y - abs(dist_vec.y)
     z = abs(dist_vec.z) < box_vec.z * 0.5 ? dist_vec.z : box_vec.z - abs(dist_vec.z)
-    LinearAlgebra.norm([x, y, z])
+    sqrt(x^2 + y^2 + z^2)
 end
 
 function fix_pbc!(trj::Trajectory{RealT},
