@@ -168,6 +168,19 @@ function pair_length_matrix(trj::Trajectory{<:Real};
     map(coords_vec_pair -> pair_length_matrix(coords_vec_pair...), zip_iterate4frame)
 end
 
+"""
+    pair_length_matrix_pbc(trj::Trajectory,
+                           upper_bound::Coordinate, lower_bound::Coordinate;
+                           frame_indices::Union{Vector, OrdinalRange, Colon}       = :,
+                           first_atom_indices::Union{Vector, OrdinalRange, Colon}  = :,
+                           second_atom_indices::Union{Vector, OrdinalRange, Colon} = atom_indices1)
+    ::Vector{Matrix{Coordinate}}
+
+Calculate distance matrix for all combinations between `first_atom_indices` and `second_atom_indices` considering periodic boundary condition.
+The box size is specified by two edges, `lower_bound` and `upper_bound`, each corresponds to the lower left front and the upper right back.
+This cauculation apply to each frame of trajectory and the result matrices are stored in Vector.
+The target frame can be restricted by pass indeces vector or range to `frame_indices`.
+"""
 function pair_length_matrix_pbc(trj::Trajectory{<:Real},
     upper_bound::Coordinate{<:Real}, lower_bound::Coordinate{<:Real};
     frame_indices::Union{Vector, OrdinalRange, Colon} = :,
@@ -240,6 +253,19 @@ function contact_bool_matrix(threshold::RealT1, trj::Trajectory{RealT2};
         map(length -> length < threshold, length_matrix)
     end
 end
+
+"""
+    contact_bool_matrix_pbc(threshold::Real, trj::Trajectory
+                            upper_bound::Coordinate, lower_bound::Coordinate;
+                            frame_indices::Union{Array, OrdinalRange, Colon}       = :,
+                            first_atom_indices::Union{Array, OrdinalRange, Colon}  = :,
+                            second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)
+    ::Vector{Matrix{Bool}}
+
+Judge contact is formed or not considering periodic boundary condition. If the distance between two coordinate is shorter than threshold, contact is considered to be formed. In returned vector of matrices, each matrix correspond to contact matrix of each frame.
+The box size is specified by two edges, `lower_bound` and `upper_bound`, each corresponds to the lower left front and the upper right back.
+You can specify the target frames or atoms by `frame_indices`, `first_atom_indices` or `second_atom_indices`. When you specify the target atoms, the row of matrices corresponds to first_atom_indices and column of matrices corresponds to second_atom_indices.
+"""
 
 function contact_bool_matrix_pbc(threshold::RealT, trj::Trajectory{<:Real},
     upper_bound::Coordinate{<:Real}, lower_bound::Coordinate{<:Real};
