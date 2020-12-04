@@ -423,7 +423,7 @@ end
     ::Real
 """
 function distance_pbc(first_coord::Coordinate{RealT},  second_coord::Coordinate{RealT},
-    lower_bound::Coordinate{<:Real}, upper_bound::Coordinate{<:Real}
+    upper_bound::Coordinate{<:Real}, lower_bound::Coordinate{<:Real}
     )::RealT where RealT <: Real
 
     box_vec  = upper_bound - lower_bound

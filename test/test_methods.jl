@@ -318,13 +318,15 @@ end
 end
 
 @testset "distance_pbc" begin
-    first_coord  = Coordinate([1.0, 2.0, 2.0])
-    second_coord = Coordinate([2.5, 2.0, 2.0])
-    third_coord  = Coordinate([3.5, 2.0, 2.0])
+    first_coord  = Coordinate(1.0, 2.0, 2.0)
+    second_coord = Coordinate(2.5, 2.0, 2.0)
+    third_coord  = Coordinate(3.5, 2.0, 2.0)
+    upper_bound  = Coordinate(4.0, 4.0, 4.0)
+    lower_bound  = Coordinate(0.0, 0.0, 0.0)
     first_second =
-        distance_pbc(first_coord, second_coord, Coordinate([0.0, 0.0, 0.0]), Coordinate([4.0, 4.0, 4.0]))
+        distance_pbc(first_coord, second_coord, upper_bound, lower_bound)
     first_third  =
-        distance_pbc(first_coord, third_coord,  Coordinate([0.0, 0.0, 0.0]), Coordinate([4.0, 4.0, 4.0]))
+        distance_pbc(first_coord, third_coord,  upper_bound, lower_bound)
     @test isapprox(first_second, 1.5, atol = 1e-3)
     @test isapprox(first_third,  1.5, atol = 1e-3)
 end
