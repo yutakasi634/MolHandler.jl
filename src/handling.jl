@@ -437,8 +437,11 @@ end
 
 """
     distance_pdc(first_atom::Coordinate,  second_atom::Coordinate,
-                 lower_bound::Coordinate, upper_bound::Coordinate)
+                 upper_bound::Coordinate, lower_bound::Coordinate)
     ::Real
+
+Calculate distance `first_atom` and `second_atom` considering periodic boundary condition.
+The box size is specified by two edges, `lower_bound` and `upper_bound`, each corresponds to the lower left front and the upper right back.
 """
 function distance_pbc(first_coord::Coordinate{RealT},  second_coord::Coordinate{RealT},
     upper_bound::Coordinate{<:Real}, lower_bound::Coordinate{<:Real}
