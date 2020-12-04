@@ -157,11 +157,11 @@ Calculate distance matrix for all combination between `first_atom_indices` and `
 This cauculation apply to each frame of trajectory and the result matrices are stored in Vector.
 The target frame can be restricted by pass indeces vector or range to `frame_indices`.
 """
-function pair_length_matrix(trj::Trajectory{RealT};
+function pair_length_matrix(trj::Trajectory{<:Real};
     frame_indices::Union{Vector, OrdinalRange, Colon} = :,
     first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
     second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices
-    )::Vector{Matrix{RealT}} where RealT <: Real
+    )::Vector{<:Matrix{<:Real}}
 
     zip_iterate4frame = zip(eachcol(view(trj.coordinates, first_atom_indices, frame_indices)),
                             eachcol(view(trj.coordinates, second_atom_indices, frame_indices)))
