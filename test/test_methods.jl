@@ -221,6 +221,17 @@ end
     @test isapprox(34.6410f0, length_matrices[2][2, 1], atol = 1e-3)
 end
 
+@testset "pair_length_matrix_pbc" begin
+    coordinates = prepare_coordinates(3)
+    upper_bound = Coordinate(40.0, 40.0, 40.0)
+    lower_bound = Coordinate( 0.0,  0.0,  0.0)
+    length_matrix = pair_length_matrix_pbc(coordinates[:, 1], coordinates[:, 3],
+                                           upper_bound, lower_bound)
+
+    @test size(length_matrix) == (3, 3)
+    @test isapprox(31.1769, length_matrix[1, 3], atol = 1e-3)
+end
+
 @testset "pair_length_matrix_parallel" begin
     coordinates = prepare_coordinates(3)
     trj = Trajectory(coordinates)

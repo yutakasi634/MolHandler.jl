@@ -4,7 +4,7 @@ export Coordinate, norm, distance
 export Atom, Attribute, Frame, Trajectory
 export read_dcd, write_dcd, read_pdb, write_pdb, read_xyz, write_xyz
 export get_frame, get_atom, clip_trajectory, center_of_mass,
-       pair_length_matrix, pair_length_matrix_parallel,
+       pair_length_matrix, pair_length_matrix_pbc, pair_length_matrix_parallel,
        contact_bool_matrix, contact_bool_matrix_parallel,
        contact_probability_matrix, contact_probability_matrix_parallel,
        radius_of_gyration,

@@ -129,6 +129,24 @@ function pair_length_matrix(first_coords::ArrayT1, second_coords::ArrayT2
 end
 
 """
+     pair_length_matrix_pbc(corrds1::Vector{Coordinate}, coords2::Vector{Coordinate},
+                            upper_bound::Coordinate, lower_bound::Coordinate)
+    ::Matrix{Real}
+
+Calculate distance matrix for all combination between `coords1` and `coord2` considering periodic boundary condition.
+The box size is specified by two edges, `lower_bound` and `upper_bound`, each corresponds to the lower left front and the upper right back.
+The row of returned matrix coresspond to `coords1`, and the column correspond to `coords2`.
+"""
+function pair_length_matrix_pbc(first_coords::ArrayT1, second_coords::ArrayT2,
+    upper_bound::Coordinate{<:Real}, lower_bound::Coordinate{<:Real}
+    )::Matrix{<:Real} where {ArrayT1 <: AbstractArray{<:Coordinate{<:Real}, 1},
+                             ArrayT2 <: AbstractArray{<:Coordinate{<:Real}, 1}}
+
+    distance_pbc.(first_coords, reshape(second_coords, (1, length(second_coords))),
+                  upper_bound, lower_bound)
+end
+
+"""
     pair_length_matrix(trj::Trajectory;
                        frame_indices::Union{Vector, OrdinalRange, Colon}       = :,
                        first_atom_indices::Union{Vector, OrdinalRange, Colon}  = :,
