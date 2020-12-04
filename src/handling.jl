@@ -168,6 +168,20 @@ function pair_length_matrix(trj::Trajectory{<:Real};
     map(coords_vec_pair -> pair_length_matrix(coords_vec_pair...), zip_iterate4frame)
 end
 
+function pair_length_matrix_pbc(trj::Trajectory{<:Real},
+    upper_bound::Coordinate{<:Real}, lower_bound::Coordinate{<:Real};
+    frame_indices::Union{Vector, OrdinalRange, Colon} = :,
+    first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
+    second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices
+    )::Vector{<:Matrix{<:Real}}
+
+    zip_iterate4frame = zip(eachcol(view(trj.coordinates, first_atom_indices, frame_indices)),
+                            eachcol(view(trj.coordinates, second_atom_indices, frame_indices)))
+    map(coords_vec_pair -> pair_length_matrix_pbc(coords_vec_pair...,
+                                                  upper_bound, lower_bound),
+                                                  zip_iterate4frame)
+end
+
 """
     pair_length_matrix_parallel(trj::Trajectory;
                                 frame_indices::Union{Vector, OrdinalRange, Colon}       = :,

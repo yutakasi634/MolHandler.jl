@@ -230,6 +230,16 @@ end
 
     @test size(length_matrix) == (3, 3)
     @test isapprox(31.1769, length_matrix[1, 3], atol = 1e-3)
+
+    trj = Trajectory(coordinates)
+    length_matrices = pair_length_matrix_pbc(trj, upper_bound, lower_bound,
+                                             frame_indices = 1:2:3,
+                                             first_atom_indices = 1:2:3,
+                                             second_atom_indices = :)
+
+    @test size(length_matrices[1]) == (2, 3)
+    @test isapprox(distance_pbc(coordinates[3, 3], coordinates[1, 3], upper_bound, lower_bound),
+                   length_matrices[2][2, 1], atol = 1e-3)
 end
 
 @testset "pair_length_matrix_parallel" begin
