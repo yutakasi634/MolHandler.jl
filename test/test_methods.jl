@@ -263,6 +263,20 @@ end
     @test contact_bool_mat_arr[2][1, 2] == false
 end
 
+@testset "contact_bool_matrix_pbc" begin
+    coordinates = prepare_coordinates(2)
+    upper_bound = Coordinate(40.0, 40.0, 40.0)
+    lower_bound = Coordinate( 0.0,  0.0,  0.0)
+
+    trj = Trajectory(coordinates)
+    contact_bool_mat_arr = contact_bool_matrix_pbc(18.0f0, trj, upper_bound, lower_bound,
+                                                   first_atom_indices = 1:2, second_atom_indices = 2:3)
+
+    @test contact_bool_mat_arr[1][1, 1] == true
+    @test contact_bool_mat_arr[2][1, 2] == false
+end
+
+
 @testset "contact_bool_matrix_parallel" begin
     coordinates = prepare_coordinates(3)
     trj = Trajectory(coordinates)

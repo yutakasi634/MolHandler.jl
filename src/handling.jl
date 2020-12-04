@@ -241,6 +241,22 @@ function contact_bool_matrix(threshold::RealT1, trj::Trajectory{RealT2};
     end
 end
 
+function contact_bool_matrix_pbc(threshold::RealT, trj::Trajectory{<:Real},
+    upper_bound::Coordinate{<:Real}, lower_bound::Coordinate{<:Real};
+    frame_indices::Union{Vector, OrdinalRange, Colon} = :,
+    first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
+    second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices
+    )::Vector{Matrix{Bool}} where RealT <: Real
+
+    length_mat_arr = pair_length_matrix_pbc(trj, upper_bound, lower_bound,
+                                            frame_indices = frame_indices,
+                                            first_atom_indices = first_atom_indices,
+                                            second_atom_indices = second_atom_indices)
+    map(length_mat_arr) do length_matrix
+        map(length -> length < threshold, length_matrix)
+    end
+end
+
 """
     contact_bool_matrix_parallel(threshold::Real, trj::Trajectory;
                                  frame_indices::Union{Vector, OrdinalRange, Colon}       = :,
