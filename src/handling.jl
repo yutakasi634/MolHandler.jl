@@ -121,9 +121,9 @@ end
 Calculate distance matrix for all combination between `coords1` and `coord2`.
 The row of returned matrix coresspond to `coords1`, and the column correspond to `coords2`.
 """
-function pair_length_matrix(first_coords::AbstractArray{Coordinate{RealT}, 1},
-    second_coords::AbstractArray{Coordinate{RealT}, 1}
-    )::Matrix{RealT} where RealT <: Real
+function pair_length_matrix(first_coords::ArrayT1, second_coords::ArrayT2
+    )::Matrix{<:Real} where {ArrayT1 <: AbstractArray{<:Coordinate{<:Real}, 1},
+                             ArrayT2 <: AbstractArray{<:Coordinate{<:Real}, 1}}
 
     distance.(first_coords, reshape(second_coords, (1, length(second_coords))))
 end
