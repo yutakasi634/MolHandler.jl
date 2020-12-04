@@ -23,6 +23,7 @@ clip_trajectory
 center_of_mass
 radius_of_gyration
 pair_length_matrix
+pair_length_matrix_pbc
 contact_bool_matrix
 contact_probability_matrix
 ```
@@ -31,6 +32,7 @@ contact_probability_matrix
 ```@docs
 atom_mass
 residue_mass
+distance_pbc
 ```
 
 ### Multi-Threading
