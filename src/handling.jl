@@ -116,7 +116,7 @@ end
 
 """
     pair_length_matrix(corrds1::Vector{Coordinate}, coords2::Vector{Coordinate})
-    ::Matrix{Coordinate}
+    ::Matrix{Real}
 
 Calculate distance matrix for all combination between `coords1` and `coord2`.
 The row of returned matrix coresspond to `coords1`, and the column correspond to `coords2`.
