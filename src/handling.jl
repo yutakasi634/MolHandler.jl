@@ -266,7 +266,6 @@ Judge contact is formed or not considering periodic boundary condition. If the d
 The box size is specified by two edges, `lower_bound` and `upper_bound`, each corresponds to the lower left front and the upper right back.
 You can specify the target frames or atoms by `frame_indices`, `first_atom_indices` or `second_atom_indices`. When you specify the target atoms, the row of matrices corresponds to first_atom_indices and column of matrices corresponds to second_atom_indices.
 """
-
 function contact_bool_matrix_pbc(threshold::RealT, trj::Trajectory{<:Real},
     upper_bound::Coordinate{<:Real}, lower_bound::Coordinate{<:Real};
     frame_indices::Union{Vector, OrdinalRange, Colon} = :,
