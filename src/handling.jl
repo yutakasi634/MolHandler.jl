@@ -535,6 +535,13 @@ function fix_pbc!(trj::Trajectory{RealT},
     end
 end
 
+"""
+    move_pbc_center(coordinates::Vector{Coordinate},
+                    new_center::Coordinate, box_size::Coordinate)
+                    )::Vector{Coordinate}
+Fix coordinate to consistent with new box center and box size.
+Box size should match to original periodic boundary box size.
+"""
 function move_pbc_center(coordinates::Vector{<:Coordinate{<:Real}},
     center::Coordinate{<:Real}, box_size::Coordinate{<:Real}
     )::Vector{Coordinate{<:Real}}

@@ -21,6 +21,7 @@ get_frame
 get_atom
 clip_trajectory
 center_of_mass
+move_pbc_center
 radius_of_gyration
 pair_length_matrix
 pair_length_matrix_pbc
