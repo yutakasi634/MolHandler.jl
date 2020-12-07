@@ -264,16 +264,22 @@ end
 end
 
 @testset "contact_bool_matrix_pbc" begin
-    coordinates = prepare_coordinates(2)
-    upper_bound = Coordinate(40.0, 40.0, 40.0)
-    lower_bound = Coordinate( 0.0,  0.0,  0.0)
+    first_coord  = Coordinate(1.0, 2.0, 2.0)
+    second_coord = Coordinate(2.5, 2.0, 2.0)
+    third_coord  = Coordinate(5.0, 2.0, 2.0)
+    coordinates  = [first_coord  first_coord ;
+                    second_coord second_coord;
+                    third_coord  third_coord ]
+    trj          = Trajectory(coordinates)
+    upper_bound  = Coordinate(5.5, 4.0, 4.0)
+    lower_bound  = Coordinate(0.0, 0.0, 0.0)
 
     trj = Trajectory(coordinates)
-    contact_bool_mat_arr = contact_bool_matrix_pbc(18.0f0, trj, upper_bound, lower_bound,
-                                                   first_atom_indices = 1:2, second_atom_indices = 2:3)
+    contact_bool_mat_arr = contact_bool_matrix_pbc(2.0f0, trj, upper_bound, lower_bound)
 
-    @test contact_bool_mat_arr[1][1, 1] == true
-    @test contact_bool_mat_arr[2][1, 2] == false
+    @test contact_bool_mat_arr[1][1, 2] == true
+    @test contact_bool_mat_arr[2][3, 1] == true
+    @test contact_bool_mat_arr[2][2, 3] == false
 end
 
 
