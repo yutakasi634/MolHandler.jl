@@ -8,7 +8,8 @@ export get_frame, get_atom, clip_trajectory, center_of_mass,
        contact_bool_matrix, contact_bool_matrix_pbc, contact_bool_matrix_parallel,
        contact_probability_matrix, contact_probability_matrix_parallel,
        radius_of_gyration,
-       atom_mass, residue_mass, distance_pbc, fix_pbc!
+       atom_mass, residue_mass,
+       distance_pbc, fix_pbc!, move_pbc_center
 
 # codes
 include("variables.jl")

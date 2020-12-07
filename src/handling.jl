@@ -534,3 +534,18 @@ function fix_pbc!(trj::Trajectory{RealT},
         end
     end
 end
+
+function move_pbc_center(coordinates::Vector{<:Coordinate{<:Real}},
+    center::Coordinate{<:Real}, box_size::Coordinate{<:Real}
+    )::Vector{Coordinate{<:Real}}
+
+    new_coords = copy(coordinates)
+    half_box = box_size / 2
+    for coord in new_coords
+        dist = coord - center
+        coord.x = abs(dist.x) < half_box.x ? coord.x : coord.x - sign(dist.x) * box_size.x
+        coord.y = abs(dist.y) < half_box.y ? coord.y : coord.y - sign(dist.y) * box_size.y
+        coord.z = abs(dist.z) < half_box.z ? coord.z : coord.z - sign(dist.z) * box_size.z
+    end
+    new_coords
+end

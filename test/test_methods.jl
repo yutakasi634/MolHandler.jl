@@ -370,3 +370,15 @@ end
     dcd = read_dcd("data/test_position.dcd")
     @test_nowarn fix_pbc!(dcd, Coordinate([0.0f0, 0.0f0, 0.0f0]), Coordinate([10.0f0, 10.0f0, 10.0f0]))
 end
+
+@testset "move_pbc_center" begin
+    first_coord  = Coordinate(1.0, 2.0, 2.0)
+    second_coord = Coordinate(2.5, 2.0, 2.0)
+    third_coord  = Coordinate(3.5, 2.0, 2.0)
+    coordinates  = [first_coord, second_coord, third_coord]
+    new_center   = Coordinate(1.0, 2.0, 2.0)
+    box_size     = Coordinate(4.0, 4.0, 4.0)
+    new_coords = move_pbc_center(coordinates, new_center, box_size)
+    @test isapprox(Array(first_coord), Array(new_coords[1]), atol = 1e-3)
+    @test isapprox([-0.5, 2.0, 2.0],   Array(new_coords[3]), atol = 1e-3)
+end
