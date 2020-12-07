@@ -81,6 +81,13 @@ function clip_trajectory(query::Union{Vector{IntT}, OrdinalRange}, trj::Trajecto
     end
 end
 
+function geometric_center_of_mass(coordinates::Vector{<:Coordinate{<:Real}};
+    atom_indices::Union{Vector, OrdinalRange, Colon} = :)::Vector{<:Coordinate{<:RealT}}
+
+    selected_coord = view(trj.coordinates, atom_indices)
+    vec(sum(selected_coord) / length(selected_coord))
+end
+
 """
     center_of_mass(query::Trajectory;
                    frame_indices::Union{Vector, OrdinalRange, Colon} = :,
