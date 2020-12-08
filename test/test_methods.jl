@@ -223,22 +223,20 @@ end
 
 @testset "pair_length_matrix_pbc" begin
     coordinates = prepare_coordinates(3)
-    upper_bound = Coordinate(40.0, 40.0, 40.0)
-    lower_bound = Coordinate( 0.0,  0.0,  0.0)
-    length_matrix = pair_length_matrix_pbc(coordinates[:, 1], coordinates[:, 3],
-                                           upper_bound, lower_bound)
+    box_size    = Coordinate(40.0, 40.0, 40.0)
+    length_matrix = pair_length_matrix_pbc(coordinates[:, 1], coordinates[:, 3], box_size)
 
     @test size(length_matrix) == (3, 3)
     @test isapprox(31.1769, length_matrix[1, 3], atol = 1e-3)
 
     trj = Trajectory(coordinates)
-    length_matrices = pair_length_matrix_pbc(trj, upper_bound, lower_bound,
+    length_matrices = pair_length_matrix_pbc(trj, box_size,
                                              frame_indices = 1:2:3,
                                              first_atom_indices = 1:2:3,
                                              second_atom_indices = :)
 
     @test size(length_matrices[1]) == (2, 3)
-    @test isapprox(distance_pbc(coordinates[3, 3], coordinates[1, 3], upper_bound, lower_bound),
+    @test isapprox(distance_pbc(coordinates[3, 3], coordinates[1, 3], box_size),
                    length_matrices[2][2, 1], atol = 1e-3)
 end
 
@@ -271,11 +269,10 @@ end
                     second_coord second_coord;
                     third_coord  third_coord ]
     trj          = Trajectory(coordinates)
-    upper_bound  = Coordinate(5.5, 4.0, 4.0)
-    lower_bound  = Coordinate(0.0, 0.0, 0.0)
+    box_size     = Coordinate(5.5, 4.0, 4.0)
 
     trj = Trajectory(coordinates)
-    contact_bool_mat_arr = contact_bool_matrix_pbc(2.0f0, trj, upper_bound, lower_bound)
+    contact_bool_mat_arr = contact_bool_matrix_pbc(2.0f0, trj, box_size)
 
     @test contact_bool_mat_arr[1][1, 2] == true
     @test contact_bool_mat_arr[2][3, 1] == true
@@ -362,12 +359,11 @@ end
     first_coord  = Coordinate(1.0, 2.0, 2.0)
     second_coord = Coordinate(2.5, 2.0, 2.0)
     third_coord  = Coordinate(3.5, 2.0, 2.0)
-    upper_bound  = Coordinate(4.0, 4.0, 4.0)
-    lower_bound  = Coordinate(0.0, 0.0, 0.0)
+    box_size     = Coordinate(4.0, 4.0, 4.0)
     first_second =
-        distance_pbc(first_coord, second_coord, upper_bound, lower_bound)
+        distance_pbc(first_coord, second_coord, box_size)
     first_third  =
-        distance_pbc(first_coord, third_coord,  upper_bound, lower_bound)
+        distance_pbc(first_coord, third_coord,  box_size)
     @test isapprox(first_second, 1.5, atol = 1e-3)
     @test isapprox(first_third,  1.5, atol = 1e-3)
 end
@@ -386,7 +382,8 @@ end
     dcd = read_dcd("data/test_position.dcd")
     pdb = read_pdb("data/test_position.pdb")
     dcd.attributes = pdb.attributes
-    @test_nowarn fix_pbc!(dcd, Coordinate([10.0f0, 10.0f0, 10.0f0]), Coordinate([0.0f0, 0.0f0, 0.0f0]))
+    box_size = Coordinate(10.0, 10.0, 10.0)
+    @test_nowarn fix_pbc!(dcd, box_size)
 end
 
 @testset "move_pbc_center" begin
