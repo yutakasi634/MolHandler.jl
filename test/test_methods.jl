@@ -374,7 +374,9 @@ end
 
 @testset "fix_pbc!" begin
     dcd = read_dcd("data/test_position.dcd")
-    @test_nowarn fix_pbc!(dcd, Coordinate([0.0f0, 0.0f0, 0.0f0]), Coordinate([10.0f0, 10.0f0, 10.0f0]))
+    pdb = read_pdb("data/test_position.pdb")
+    dcd.attributes = pdb.attributes
+    @test_nowarn fix_pbc!(dcd, Coordinate([10.0f0, 10.0f0, 10.0f0]), Coordinate([0.0f0, 0.0f0, 0.0f0]))
 end
 
 @testset "move_pbc_center" begin

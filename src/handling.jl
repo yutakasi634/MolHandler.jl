@@ -518,7 +518,7 @@ function distance_pbc(first_coord::Coordinate{RealT},  second_coord::Coordinate{
 end
 
 function fix_pbc!(trj::Trajectory{RealT},
-    lower_bound::Coordinate{RealT}, upper_bound::Coordinate{RealT}
+    upper_bound::Coordinate{RealT}, lower_bound::Coordinate{RealT}
     ) where RealT <: Real
 
     # TODO: remove side effect
