@@ -372,6 +372,16 @@ end
     @test isapprox(first_third,  1.5, atol = 1e-3)
 end
 
+@testset "fix_pbc" begin
+    dcd = read_dcd("data/test_position.dcd")
+    groupid_vec = [1, 1, 2, 2, 2]
+    box_size  = Coordinate(10.0f0, 10.0f0, 10.0f0)
+    @test_nowarn fix_pbc(dcd.coordinates[:, 1], groupid_vec, box_size)
+
+    pdb = read_pdb("data/test_position.pdb")
+    @test_nowarn fix_pbc(pdb, box_size)
+end
+
 @testset "fix_pbc!" begin
     dcd = read_dcd("data/test_position.dcd")
     pdb = read_pdb("data/test_position.pdb")

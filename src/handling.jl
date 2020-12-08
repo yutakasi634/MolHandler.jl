@@ -517,6 +517,62 @@ function distance_pbc(first_coord::Coordinate{RealT},  second_coord::Coordinate{
     sqrt(x^2 + y^2 + z^2)
 end
 
+### under implementing >>>
+function fix_pbc(coordinates::Vector{<:Coordinate{RealT}}, groupid_vec::Vector{<:Integer},
+    box_size::Coordinate{<:Real}, half_box_size::Coordinate{<:Real}
+    )::Vector{<:Coordinate{RealT}} where RealT <: Real
+
+    if length(coordinates) != length(groupid_vec)
+        throw(AssertionError("""
+                             coordinate vector and groupid vector should be same length.
+                             """))
+    end
+
+    new_coords = copy(coordinates)
+    unique_groupid_vec = unique(groupid_vec)
+    for groupid in unique_groupid_vec
+        same_group_ids = findall(id->id==groupid, groupid_vec)
+        @views sbj_coords = new_coords[same_group_ids[2:end]]
+        @views dist2first = sbj_coords .- coordinates[same_group_ids[1]]
+        for (coord, dist) in zip(sbj_coords, dist2first)
+            coord.x = abs(dist.x) < half_box_size.x ? coord.x : coord.x - sign(dist.x) * box_size.x
+            coord.y = abs(dist.y) < half_box_size.y ? coord.y : coord.y - sign(dist.y) * box_size.y
+            coord.z = abs(dist.z) < half_box_size.z ? coord.z : coord.z - sign(dist.z) * box_size.z
+        end
+    end
+    new_coords
+end
+
+function fix_pbc(coordinates::Vector{<:Coordinate{RealT}}, groupid_vec::Vector{<:Integer},
+    box_size::Coordinate{<:Real})::Vector{<:Coordinate{RealT}} where RealT <: Real
+    half_box_size = box_size * 0.5
+    fix_pbc(coordinates, groupid_vec, box_size, half_box_size)
+end
+
+function fix_pbc(trj::Trajectory{RealT}, box_size::Coordinate{<:Real}
+    )::Trajectory{RealT} where RealT <: Real
+
+    new_trj = deepcopy(trj)
+    half_box_size = box_size * 0.5
+
+    resid_vec  = map(attr->attr.resid, new_trj.attributes)
+    unique_resid_vec = unique(resid_vec)
+    coordinates = new_trj.coordinates
+    attributes  = new_trj.attributes
+    for resid in unique_resid_vec
+        same_mol_indices = findall(id->id==resid, resid_vec)
+        @views sbj_coords = coordinates[same_mol_indices[2:end], :]
+        @views dist2first_mat = sbj_coords .- permutedims(coordinates[same_mol_indices[1], :])
+        for (coord, dist) in zip(sbj_coords, dist2first_mat)
+            coord.x = abs(dist.x) < half_box_size.x ? coord.x : coord.x - sign(dist.x) * box_size.x
+            coord.y = abs(dist.y) < half_box_size.y ? coord.y : coord.y - sign(dist.y) * box_size.y
+            coord.z = abs(dist.z) < half_box_size.z ? coord.z : coord.z - sign(dist.z) * box_size.z
+        end
+    end
+    new_trj
+end
+
+
 function fix_pbc!(trj::Trajectory{RealT},
     upper_bound::Coordinate{RealT}, lower_bound::Coordinate{RealT}
     ) where RealT <: Real
@@ -541,6 +597,7 @@ function fix_pbc!(trj::Trajectory{RealT},
         end
     end
 end
+### <<< under implementing
 
 """
     move_pbc_center(coordinates::Vector{Coordinate},
