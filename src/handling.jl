@@ -549,12 +549,12 @@ end
 Fix coordinate to consistent with new box center and box size.
 Box size should match to original periodic boundary box size.
 """
-function move_pbc_center(coordinates::Vector{<:Coordinate{<:Real}},
+function move_pbc_center(coordinates::Vector{<:Coordinate{RealT}},
     center::Coordinate{<:Real}, box_size::Coordinate{<:Real}
-    )::Vector{Coordinate{<:Real}}
+    )::Vector{Coordinate{RealT}} where RealT <: Real
 
     new_coords = copy(coordinates)
-    half_box = box_size / 2
+    half_box = box_size * 0.5
     for coord in new_coords
         dist = coord - center
         coord.x = abs(dist.x) < half_box.x ? coord.x : coord.x - sign(dist.x) * box_size.x
