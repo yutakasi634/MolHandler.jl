@@ -512,7 +512,6 @@ function distance_pbc(first_coord::Coordinate{RealT},  second_coord::Coordinate{
     sqrt(x^2 + y^2 + z^2)
 end
 
-### under implementing >>>
 function fix_pbc(coordinates::Vector{<:Coordinate{RealT}}, groupid_vec::Vector{<:Integer},
     box_size::Coordinate{<:Real}, half_box_size::Coordinate{<:Real}
     )::Vector{<:Coordinate{RealT}} where RealT <: Real
@@ -544,6 +543,12 @@ function fix_pbc(coordinates::Vector{<:Coordinate{RealT}}, groupid_vec::Vector{<
     fix_pbc(coordinates, groupid_vec, box_size, half_box_size)
 end
 
+"""
+    fix_pbc(trj::Trajectory, box_size::Coordinate)::Trajectory
+
+Fix residues splited by periodic boundary condition.
+If the residue over the boundary of the box, the atoms in the residue which separated from first atom of that move to the position where the atom locate without periodic boundary condition.
+"""
 function fix_pbc(trj::Trajectory{RealT}, box_size::Coordinate{<:Real}
     )::Trajectory{RealT} where RealT <: Real
 
@@ -567,7 +572,6 @@ function fix_pbc(trj::Trajectory{RealT}, box_size::Coordinate{<:Real}
     new_trj
 end
 
-
 function fix_pbc!(trj::Trajectory{RealT}, box_size::Coordinate{<:Real}
     ) where RealT <: Real
 
@@ -590,7 +594,6 @@ function fix_pbc!(trj::Trajectory{RealT}, box_size::Coordinate{<:Real}
         end
     end
 end
-### <<< under implementing
 
 """
     move_pbc_center(coordinates::Vector{Coordinate},
