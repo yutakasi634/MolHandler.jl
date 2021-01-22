@@ -7,6 +7,11 @@ This contains 5 fields like below.
 - atomname : Union{String,  Nothing}
 - atomid   : Union{Int64,   Nothing}
 - mass     : Union{Float32, Nothing}
+
+The constructor is below.
+
+    function Attribute(;resname = nothing, resid = nothing,
+                       atomname = nothing, atomid = nothing, mass = nothing)
 """
 mutable struct Attribute
 
@@ -58,6 +63,11 @@ The row of coordinates matrix means time series of one atom.
 ```
 
 In this case, one snapshot correspond to `[a b c]`.
+
+The constructor is below.
+
+    function Trajectory(coordinates::Vector{Coordinate},
+                        attributes::Vector{Attribute} = [Attribute() for i=1:length(coordinates)])
 """
 mutable struct Trajectory{RealT <: Real}
     coordinates::Array{Coordinate{RealT}}
