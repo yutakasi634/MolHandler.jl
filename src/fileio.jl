@@ -234,7 +234,8 @@ Write `coordinates`, `resname`, `resid`, `atomname`, `atomid` to `filename` base
 If you set Real value to `tempfactor`, all tempfactor will be field with that value.
 """
 function write_pdb(filename::AbstractString, trj::Trajectory;
-    tempfactor::Union{RealT, Nothing} = nothing) where RealT <: Real
+    tempfactor::Union{RealT, Nothing} = nothing,
+    conects::Union{Vector{Vector{Int64}}, Nothing} = nothing) where RealT <: Real
 
     attributes = trj.attributes
     #  check attributes of trj have sufficient information.
@@ -284,6 +285,18 @@ function write_pdb(filename::AbstractString, trj::Trajectory;
                       x_coord_str*y_coord_str*z_coord_str*"      "*tempfactor_str*"\n")
             end
             write(io, "TER\n")
+
+            # write CONECT records
+            if conects != nothing
+                for conect_info in conects
+                    conect_str = "CONECT"
+                    for idx in conect_info
+                        conect_str *= Printf.@sprintf("%5d", idx)
+                    end
+                    conect_str *= "\n"
+                    write(io, conect_str)
+                end
+            end
             write(io, "END\n")
         end
     end
