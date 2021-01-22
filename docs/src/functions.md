@@ -28,6 +28,7 @@ pair_length_matrix_pbc
 contact_bool_matrix
 contact_bool_matrix_pbc
 contact_probability_matrix
+fix_pbc
 ```
 
 ## Utility

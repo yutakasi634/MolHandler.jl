@@ -137,20 +137,19 @@ end
 
 """
      pair_length_matrix_pbc(corrds1::Vector{Coordinate}, coords2::Vector{Coordinate},
-                            upper_bound::Coordinate, lower_bound::Coordinate)
+                            box_size::Coordinate)
     ::Matrix{Real}
 
 Calculate distance matrix for all combination between `coords1` and `coord2` considering periodic boundary condition.
-The box size is specified by two edges, `lower_bound` and `upper_bound`, each corresponds to the lower left front and the upper right back.
+The box size information used for calculation is specified by `box_size` argument.
 The row of returned matrix coresspond to `coords1`, and the column correspond to `coords2`.
 """
 function pair_length_matrix_pbc(first_coords::ArrayT1, second_coords::ArrayT2,
-    upper_bound::Coordinate{<:Real}, lower_bound::Coordinate{<:Real}
+    box_size::Coordinate{<:Real}
     )::Matrix{<:Real} where {ArrayT1 <: AbstractArray{<:Coordinate{<:Real}, 1},
                              ArrayT2 <: AbstractArray{<:Coordinate{<:Real}, 1}}
 
-    distance_pbc.(first_coords, reshape(second_coords, (1, length(second_coords))),
-                  upper_bound, lower_bound)
+    distance_pbc.(first_coords, reshape(second_coords, (1, length(second_coords))), box_size)
 end
 
 """
@@ -176,20 +175,18 @@ function pair_length_matrix(trj::Trajectory{<:Real};
 end
 
 """
-    pair_length_matrix_pbc(trj::Trajectory,
-                           upper_bound::Coordinate, lower_bound::Coordinate;
+    pair_length_matrix_pbc(trj::Trajectory, box_size::Coordinate;
                            frame_indices::Union{Vector, OrdinalRange, Colon}       = :,
                            first_atom_indices::Union{Vector, OrdinalRange, Colon}  = :,
                            second_atom_indices::Union{Vector, OrdinalRange, Colon} = atom_indices1)
     ::Vector{Matrix{Coordinate}}
 
 Calculate distance matrix for all combinations between `first_atom_indices` and `second_atom_indices` considering periodic boundary condition.
-The box size is specified by two edges, `lower_bound` and `upper_bound`, each corresponds to the lower left front and the upper right back.
+The box size information used for calculation is specified by `box_size` argument.
 This cauculation apply to each frame of trajectory and the result matrices are stored in Vector.
 The target frame can be restricted by pass indeces vector or range to `frame_indices`.
 """
-function pair_length_matrix_pbc(trj::Trajectory{<:Real},
-    upper_bound::Coordinate{<:Real}, lower_bound::Coordinate{<:Real};
+function pair_length_matrix_pbc(trj::Trajectory{<:Real}, box_size::Coordinate{<:Real};
     frame_indices::Union{Vector, OrdinalRange, Colon} = :,
     first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
     second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices
@@ -197,9 +194,8 @@ function pair_length_matrix_pbc(trj::Trajectory{<:Real},
 
     zip_iterate4frame = zip(eachcol(view(trj.coordinates, first_atom_indices, frame_indices)),
                             eachcol(view(trj.coordinates, second_atom_indices, frame_indices)))
-    map(coords_vec_pair -> pair_length_matrix_pbc(coords_vec_pair...,
-                                                  upper_bound, lower_bound),
-                                                  zip_iterate4frame)
+    map(coords_vec_pair -> pair_length_matrix_pbc(coords_vec_pair..., box_size),
+        zip_iterate4frame)
 end
 
 """
@@ -262,25 +258,24 @@ function contact_bool_matrix(threshold::RealT1, trj::Trajectory{RealT2};
 end
 
 """
-    contact_bool_matrix_pbc(threshold::Real, trj::Trajectory
-                            upper_bound::Coordinate, lower_bound::Coordinate;
+    contact_bool_matrix_pbc(threshold::Real, trj::Trajectory, box_size::Coordinate;
                             frame_indices::Union{Array, OrdinalRange, Colon}       = :,
                             first_atom_indices::Union{Array, OrdinalRange, Colon}  = :,
                             second_atom_indices::Union{Array, OrdinalRange, Colon} = first_atom_indices)
     ::Vector{Matrix{Bool}}
 
 Judge contact is formed or not considering periodic boundary condition. If the distance between two coordinate is shorter than threshold, contact is considered to be formed. In returned vector of matrices, each matrix correspond to contact matrix of each frame.
-The box size is specified by two edges, `lower_bound` and `upper_bound`, each corresponds to the lower left front and the upper right back.
+The box size information used for calculation is specified `box_size` argument.
 You can specify the target frames or atoms by `frame_indices`, `first_atom_indices` or `second_atom_indices`. When you specify the target atoms, the row of matrices corresponds to first_atom_indices and column of matrices corresponds to second_atom_indices.
 """
 function contact_bool_matrix_pbc(threshold::RealT, trj::Trajectory{<:Real},
-    upper_bound::Coordinate{<:Real}, lower_bound::Coordinate{<:Real};
+    box_size::Coordinate{<:Real};
     frame_indices::Union{Vector, OrdinalRange, Colon} = :,
     first_atom_indices::Union{Vector, OrdinalRange, Colon} = :,
     second_atom_indices::Union{Vector, OrdinalRange, Colon} = first_atom_indices
     )::Vector{Matrix{Bool}} where RealT <: Real
 
-    length_mat_arr = pair_length_matrix_pbc(trj, upper_bound, lower_bound,
+    length_mat_arr = pair_length_matrix_pbc(trj, box_size,
                                             frame_indices = frame_indices,
                                             first_atom_indices = first_atom_indices,
                                             second_atom_indices = second_atom_indices)
@@ -499,25 +494,24 @@ end
 
 """
     distance_pdc(first_atom::Coordinate,  second_atom::Coordinate,
-                 upper_bound::Coordinate, lower_bound::Coordinate)
+                 box_size::Coordinate)
     ::Real
 
 Calculate distance `first_atom` and `second_atom` considering periodic boundary condition.
-The box size is specified by two edges, `lower_bound` and `upper_bound`, each corresponds to the lower left front and the upper right back.
+The box size information used calculatin is specified by `box_size` argument.
 """
 function distance_pbc(first_coord::Coordinate{RealT},  second_coord::Coordinate{RealT},
-    upper_bound::Coordinate{<:Real}, lower_bound::Coordinate{<:Real}
+    box_size::Coordinate{<:Real}
     )::RealT where RealT <: Real
 
-    box_vec  = upper_bound - lower_bound
+    half_box_size = box_size * 0.5
     dist_vec = first_coord  - second_coord
-    x = abs(dist_vec.x) < box_vec.x * 0.5 ? dist_vec.x : box_vec.x - abs(dist_vec.x)
-    y = abs(dist_vec.y) < box_vec.y * 0.5 ? dist_vec.y : box_vec.y - abs(dist_vec.y)
-    z = abs(dist_vec.z) < box_vec.z * 0.5 ? dist_vec.z : box_vec.z - abs(dist_vec.z)
+    x = abs(dist_vec.x) < half_box_size.x ? dist_vec.x : box_size.x - abs(dist_vec.x)
+    y = abs(dist_vec.y) < half_box_size.y ? dist_vec.y : box_size.y - abs(dist_vec.y)
+    z = abs(dist_vec.z) < half_box_size.z ? dist_vec.z : box_size.z - abs(dist_vec.z)
     sqrt(x^2 + y^2 + z^2)
 end
 
-### under implementing >>>
 function fix_pbc(coordinates::Vector{<:Coordinate{RealT}}, groupid_vec::Vector{<:Integer},
     box_size::Coordinate{<:Real}, half_box_size::Coordinate{<:Real}
     )::Vector{<:Coordinate{RealT}} where RealT <: Real
@@ -549,6 +543,12 @@ function fix_pbc(coordinates::Vector{<:Coordinate{RealT}}, groupid_vec::Vector{<
     fix_pbc(coordinates, groupid_vec, box_size, half_box_size)
 end
 
+"""
+    fix_pbc(trj::Trajectory, box_size::Coordinate)::Trajectory
+
+Fix residues splited by periodic boundary condition.
+If the residue over the boundary of the box, the atoms in the residue which separated from first atom of that move to the position where the atom locate without periodic boundary condition.
+"""
 function fix_pbc(trj::Trajectory{RealT}, box_size::Coordinate{<:Real}
     )::Trajectory{RealT} where RealT <: Real
 
@@ -572,15 +572,12 @@ function fix_pbc(trj::Trajectory{RealT}, box_size::Coordinate{<:Real}
     new_trj
 end
 
-
-function fix_pbc!(trj::Trajectory{RealT},
-    upper_bound::Coordinate{RealT}, lower_bound::Coordinate{RealT}
+function fix_pbc!(trj::Trajectory{RealT}, box_size::Coordinate{<:Real}
     ) where RealT <: Real
 
     # TODO: remove side effect
     # fix atom in over pbc residue based on first atom of the residue
-    box_coord = upper_bound - lower_bound
-    half_box_coord = box_coord * 0.5
+    half_box_size = box_size * 0.5
 
     resid_vec  = map(attr->attr.resid, trj.attributes)
     unique_resid_vec = unique(resid_vec)
@@ -591,13 +588,12 @@ function fix_pbc!(trj::Trajectory{RealT},
         @views sbj_coords = coordinates[same_mol_indices[2:end], :]
         @views dist2first_mat = sbj_coords .- permutedims(coordinates[same_mol_indices[1], :])
         for (coord, dist) in zip(sbj_coords, dist2first_mat)
-            coord.x = abs(dist.x) < half_box_coord.x ? coord.x : coord.x - sign(dist.x) * box_coord.x
-            coord.y = abs(dist.y) < half_box_coord.y ? coord.y : coord.y - sign(dist.y) * box_coord.y
-            coord.z = abs(dist.z) < half_box_coord.z ? coord.z : coord.z - sign(dist.z) * box_coord.z
+            coord.x = abs(dist.x) < half_box_size.x ? coord.x : coord.x - sign(dist.x) * box_size.x
+            coord.y = abs(dist.y) < half_box_size.y ? coord.y : coord.y - sign(dist.y) * box_size.y
+            coord.z = abs(dist.z) < half_box_size.z ? coord.z : coord.z - sign(dist.z) * box_size.z
         end
     end
 end
-### <<< under implementing
 
 """
     move_pbc_center(coordinates::Vector{Coordinate},
