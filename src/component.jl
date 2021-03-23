@@ -103,3 +103,16 @@ mutable struct Frame{RealT <: Real}
         new{RealT}(coordinates, attributes, length(coordinates))
     end
 end
+
+mutable struct DCDMetaInfo
+    file_size::Int32
+    first_step::Int32
+    nstep_save::Int32
+    total_step::Int32
+    total_unit::Int32
+    time_step::Float32
+    unitcell_flag::Bool
+    version::Int32
+    number_of_atom::Int32
+    header_size::Int32
+end

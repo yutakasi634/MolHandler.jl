@@ -1,6 +1,59 @@
 import Dates
 import Printf
 
+function read_dcd_meta_info(io::IOStream)::DCDMetaInfo
+    unitcell_flag = false # for charmm format
+
+    seekend(io)
+    file_size = position(io)
+    seekstart(io)
+
+    # read header first block
+    skip(io, 4) # skip block size part
+    header_sig = Array{Char, 1}(undef, 4)
+    for i in 1:4
+        header_sig[i] = read(io, Char)
+    end
+    total_frame_in_header = read(io, Int32)
+    first_step = read(io, Int32)
+    nstep_save = read(io, Int32)
+    total_step = read(io, Int32)
+    total_unit = read(io, Int32)
+    header_null_4 = Array{Int32, 1}(undef, 4)
+    read!(io, header_null_4)
+    time_step  = read(io, Float32)
+    header_null_9 = Array{Int32, 1}(undef, 9)
+    read!(io, header_null_9)
+    if header_null_9[1] != 0
+        unitcell_flag = true
+    end
+    version   = read(io, Int32)
+    skip(io, 4) # skip block size part
+
+    # read header second block
+    skip(io, 4)
+    number_of_lines    = read(io, Int32)
+    title = []
+    for i in 1:number_of_lines
+        line = Array{Char, 1}(undef, 80)
+        for i in 1:80
+            line[i] = read(io, Char)
+        end
+        push!(title, String(line))
+    end
+    skip(io, 4) # skip block size part
+
+    # read header third block
+    skip(io, 4) # skip block size part
+    number_of_atom     = read(io, Int32)
+    skip(io, 4) # skip block size part
+
+    header_size = position(io)
+
+    return DCDMetaInfo(file_size, first_step, nstep_save, total_step, total_unit,
+                       time_step, unitcell_flag, version, number_of_atom, header_size)
+end
+
 """
     read_dcd(filename::String;
              frame_indices::Union{Vector, OrdinalRange, Colon} = :)
@@ -14,54 +67,15 @@ function read_dcd(filename::String; frame_indices::Union{Vector, OrdinalRange, C
     target_frame_indices = frame_indices
 
     open(filename, "r") do io
-        unitcell_flag = false # for charmm format
 
-        seekend(io)
-        file_size = position(io) # get file size
-        seekstart(io)
-
-        # read header first block
-        skip(io, 4) # skip block size part
-        header_sig = Array{Char, 1}(undef, 4)
-        for i in 1:4
-            header_sig[i] = read(io, Char)
-        end
-        total_frame_in_header = read(io, Int32)
-        first_step = read(io, Int32)
-        nstep_save = read(io, Int32)
-        total_step     = read(io, Int32)
-        total_unit     = read(io, Int32)
-        header_null_4 = Array{Int32, 1}(undef, 4)
-        read!(io, header_null_4)
-        time_step  = read(io, Float32)
-        header_null_9 = Array{Int32, 1}(undef, 9)
-        read!(io, header_null_9)
-        if header_null_9[1] != 0
-            unitcell_flag = true
-        end
-        version   = read(io, Int32)
-        skip(io, 4) # skip block size part
-
-        # read header second block
-        skip(io, 4)
-        number_of_lines    = read(io, Int32)
-        title = []
-        for i in 1:number_of_lines
-            line = Array{Char, 1}(undef, 80)
-            for i in 1:80
-                line[i] = read(io, Char)
-            end
-            push!(title, String(line))
-        end
-        skip(io, 4) # skip block size part
-
-        # read header third block
-        skip(io, 4) # skip block size part
-        number_of_atom     = read(io, Int32)
-        skip(io, 4) # skip block size part
+        dcd_meta::DCDMetaInfo = read_dcd_meta_info(io)
+        header_size           = dcd_meta.header_size
+        unitcell_flag         = dcd_meta.unitcell_flag
+        number_of_atom        = dcd_meta.number_of_atom
+        file_size             = dcd_meta.file_size
 
         # read body block
-        header_size = position(io)
+        seek(io, header_size)
         stepblocksize = (8 + 4 * number_of_atom) * 3
         if unitcell_flag
             stepblocksize += 56 # add unitcell block size (4 + 8 * 6 + 4)
