@@ -56,13 +56,18 @@ end
 
 """
     read_dcd(filename::String;
-             frame_indices::Union{Vector, OrdinalRange, Colon} = :)
+             frame_indices::Union{Vector, OrdinalRange, Colon, Nothing} = nothing,
+             step::Union{Int, Nothing} = nothing)
     ::Trajectory
 
 Return Trajectory object which filled `coordinates`, `nframe`, `natom` fields.
-If you set frame_indices, only specified frame is read.
+If you set `frame_indices`, only specified frame is read.
+If you set `step`, every step frame is read.
+You can't specify both `frame_indices` and `step` at the same time.
 """
-function read_dcd(filename::String; frame_indices::Union{Vector, OrdinalRange, Colon} = :)::Trajectory
+function read_dcd(filename::String;
+                  frame_indices::Union{Vector, OrdinalRange, Colon, Nothing} = nothing,
+                  step::Union{Int, Nothing} = nothing)::Trajectory
     coordinates_time_series = Matrix{Coordinate{Float32}}(undef, 0, 0)
     target_frame_indices = frame_indices
 
@@ -81,7 +86,19 @@ function read_dcd(filename::String; frame_indices::Union{Vector, OrdinalRange, C
             stepblocksize += 56 # add unitcell block size (4 + 8 * 6 + 4)
         end
         total_frame = Int32(floor((file_size - header_size) / stepblocksize))
-        if typeof(target_frame_indices) == Colon
+        if frame_indices != nothing && step != nothing
+            throw(AssertionError("""
+                                 You can't use both frame_indices and step option at the same time.
+                                 """))
+        elseif frame_indices != nothing
+            if typeof(target_frame_indices) == Colon
+                target_frame_indices = 1:total_frame
+            else
+                target_frame_indices = frame_indices
+            end
+        elseif step != nothing
+            target_frame_indices = 1:step:total_frame
+        else # both frame_indices and step are nothing
             target_frame_indices = 1:total_frame
         end
 
