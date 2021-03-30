@@ -105,7 +105,7 @@ mutable struct Frame{RealT <: Real}
 end
 
 mutable struct DCDMetaInfo
-    file_size::Int32
+    file_size::Int64
     first_step::Int32
     nstep_save::Int32
     total_step::Int32
