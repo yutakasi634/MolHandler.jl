@@ -537,6 +537,14 @@ function fix_pbc(coordinates::Vector{<:Coordinate{RealT}}, groupid_vec::Vector{<
     new_coords
 end
 
+"""
+    fix_pbc(coordinates::Vector{Coordinate}, groupid_vec::Vector{Integer},
+    box_size::Coordinate{<:Real})::Vector{Coordinate}
+
+    Fix the atom group splited by periodic boundary box. This group is defined by groupid_vec which contain each particles group id.
+For example, if your system have 3 atom, and atom 1 and 2 are group 1, and atom 3 is group 2, this groupid_vec is [1, 1, 2].
+If the group over the boundary of the box, the atoms in the group which separated from first atom of that move to the position where the atom locate without periodic boundary condition.
+"""
 function fix_pbc(coordinates::Vector{<:Coordinate{RealT}}, groupid_vec::Vector{<:Integer},
     box_size::Coordinate{<:Real})::Vector{<:Coordinate{RealT}} where RealT <: Real
     half_box_size = box_size * 0.5
@@ -546,7 +554,7 @@ end
 """
     fix_pbc(trj::Trajectory, box_size::Coordinate)::Trajectory
 
-Fix residues splited by periodic boundary condition.
+Fix residues splited by periodic boundary condition. This is more specific version of fix_pbc function for trajectory handling.
 If the residue over the boundary of the box, the atoms in the residue which separated from first atom of that move to the position where the atom locate without periodic boundary condition.
 """
 function fix_pbc(trj::Trajectory{RealT}, box_size::Coordinate{<:Real}
