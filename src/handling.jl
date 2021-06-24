@@ -522,7 +522,7 @@ function fix_pbc(coordinates::Vector{<:Coordinate{RealT}}, groupid_vec::Vector{<
                              """))
     end
 
-    new_coords = copy(coordinates)
+    new_coords = deepcopy(coordinates)
     unique_groupid_vec = unique(groupid_vec)
     for groupid in unique_groupid_vec
         same_group_ids = findall(id->id==groupid, groupid_vec)
@@ -606,7 +606,7 @@ function move_pbc_center(coordinates::Vector{<:Coordinate{RealT}},
     center::Coordinate{<:Real}, box_size::Coordinate{<:Real}
     )::Vector{Coordinate{RealT}} where RealT <: Real
 
-    new_coords = copy(coordinates)
+    new_coords = deepcopy(coordinates)
     half_box = box_size * 0.5
     for coord in new_coords
         dist = coord - center
