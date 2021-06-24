@@ -66,7 +66,7 @@ In this case, one snapshot correspond to `[a b c]`.
 
 The constructor is below.
 
-    function Trajectory(coordinates::Vector{Coordinate},
+    function Trajectory(coordinates::Array{Coordinate, 2},
                         attributes::Vector{Attribute} = [Attribute() for i=1:length(coordinates)])
 """
 mutable struct Trajectory{RealT <: Real}
@@ -75,7 +75,7 @@ mutable struct Trajectory{RealT <: Real}
     natom::Int64
     nframe::Int64
 
-    function Trajectory(coordinates::Array{<:Coordinate{RealT}},
+    function Trajectory(coordinates::Array{<:Coordinate{RealT}, 2},
         attributes::Array{Attribute, 1} = [Attribute() for i=1:size(coordinates, 1)]
         ) where RealT <: Real
 
