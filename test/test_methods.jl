@@ -187,6 +187,14 @@ end
     @test cliped_atom_range.attributes  == trj.attributes[1:2:3]
 end
 
+@testset "geometric_center_of_mass" begin
+    coordinates = [Coordinate(0.0, 1.0, 2.0),
+                   Coordinate(1.0, 0.0, 3.0),
+                   Coordinate(2.0, 2.0, 4.0)]
+    @test isapprox(Array(geometric_center_of_mass(coordinates)), [1.0, 1.0, 3.0], atol = 1e-3)
+    @test isapprox(Array(geometric_center_of_mass(coordinates, atom_indices = 1:2:3)), [1.0, 1.5, 3.0], atol = 1e-3)
+end
+
 @testset "center_of_mass" begin
     coordinates = prepare_coordinates(3)
     trj_wo_attr = Trajectory(coordinates)
