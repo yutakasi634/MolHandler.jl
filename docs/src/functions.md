@@ -20,6 +20,7 @@ write_xyz
 get_frame
 get_atom
 clip_trajectory
+geometric_center_of_mass
 center_of_mass
 move_pbc_center
 radius_of_gyration

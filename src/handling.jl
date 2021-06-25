@@ -81,6 +81,15 @@ function clip_trajectory(query::Union{Vector{IntT}, OrdinalRange}, trj::Trajecto
     end
 end
 
+"""
+    geometric_center_of_mass(coordinates::Vector{Coordinate};
+                             atom_indices::Union{Vector, OrdinalRange, Colon} = :)
+    ::Coordinate
+
+Calculate the geometric center of mass of Coordinate vector for specified atom indices.
+
+> For trajectory case, geometric center of mass is calculated by `center_of_mass` method with geometric flag.
+"""
 function geometric_center_of_mass(coordinates::Vector{<:Coordinate{RealT}};
     atom_indices::Union{Vector, OrdinalRange, Colon} = :)::Coordinate{RealT} where RealT <: Real
 
