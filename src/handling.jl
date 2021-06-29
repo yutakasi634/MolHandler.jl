@@ -521,8 +521,11 @@ function distance_pbc(first_coord::Coordinate{RealT},  second_coord::Coordinate{
     sqrt(x^2 + y^2 + z^2)
 end
 
+# This function get half_box_size, because if process will apply to all trajectory,
+# half box size calculation will occur every time frame, this is overhead.
 function fix_pbc(coordinates::Vector{<:Coordinate{RealT}}, groupid_vec::Vector{<:Integer},
-    box_size::Coordinate{<:Real}, half_box_size::Coordinate{<:Real}
+    box_size::Coordinate{<:Real}, half_box_size::Coordinate{<:Real};
+    x::Bool= true, y::Bool = true, z::Bool = true
     )::Vector{<:Coordinate{RealT}} where RealT <: Real
 
     if length(coordinates) != length(groupid_vec)
@@ -533,14 +536,29 @@ function fix_pbc(coordinates::Vector{<:Coordinate{RealT}}, groupid_vec::Vector{<
 
     new_coords = deepcopy(coordinates)
     unique_groupid_vec = unique(groupid_vec)
+
     for groupid in unique_groupid_vec
         same_group_ids = findall(id->id==groupid, groupid_vec)
         @views sbj_coords = new_coords[same_group_ids[2:end]]
         @views dist2first = sbj_coords .- coordinates[same_group_ids[1]]
-        for (coord, dist) in zip(sbj_coords, dist2first)
-            coord.x = abs(dist.x) < half_box_size.x ? coord.x : coord.x - sign(dist.x) * box_size.x
-            coord.y = abs(dist.y) < half_box_size.y ? coord.y : coord.y - sign(dist.y) * box_size.y
-            coord.z = abs(dist.z) < half_box_size.z ? coord.z : coord.z - sign(dist.z) * box_size.z
+        sbj_dist_zip      = zip(sbj_coords, dist2first)
+
+        if x
+            for (coord, dist) in sbj_dist_zip
+                coord.x = abs(dist.x) < half_box_size.x ? coord.x : coord.x - sign(dist.x) * box_size.x
+            end
+        end
+
+        if y
+            for (coord, dist) in sbj_dist_zip
+                coord.y = abs(dist.y) < half_box_size.y ? coord.y : coord.y - sign(dist.y) * box_size.y
+            end
+        end
+
+        if z
+            for (coord, dist) in sbj_dist_zip
+                coord.z = abs(dist.z) < half_box_size.z ? coord.z : coord.z - sign(dist.z) * box_size.z
+            end
         end
     end
     new_coords
@@ -555,9 +573,11 @@ For example, if your system have 3 atom, and atom 1 and 2 are group 1, and atom 
 If the group over the boundary of the box, the atoms in the group which separated from first atom of that move to the position where the atom locate without periodic boundary condition.
 """
 function fix_pbc(coordinates::Vector{<:Coordinate{RealT}}, groupid_vec::Vector{<:Integer},
-    box_size::Coordinate{<:Real})::Vector{<:Coordinate{RealT}} where RealT <: Real
+    box_size::Coordinate{<:Real};
+    x::Bool = true, y::Bool = true, z::Bool = true
+    )::Vector{<:Coordinate{RealT}} where RealT <: Real
     half_box_size = box_size * 0.5
-    fix_pbc(coordinates, groupid_vec, box_size, half_box_size)
+    fix_pbc(coordinates, groupid_vec, box_size, half_box_size, x=x, y=y, z=z)
 end
 
 """
@@ -566,7 +586,8 @@ end
 Fix residues splited by periodic boundary condition. This is more specific version of fix_pbc function for trajectory handling.
 If the residue over the boundary of the box, the atoms in the residue which separated from first atom of that move to the position where the atom locate without periodic boundary condition.
 """
-function fix_pbc(trj::Trajectory{RealT}, box_size::Coordinate{<:Real}
+function fix_pbc(trj::Trajectory{RealT}, box_size::Coordinate{<:Real};
+    x::Bool = true, y::Bool = true, z::Bool = true
     )::Trajectory{RealT} where RealT <: Real
 
     new_trj = deepcopy(trj)
@@ -580,19 +601,31 @@ function fix_pbc(trj::Trajectory{RealT}, box_size::Coordinate{<:Real}
         same_mol_indices = findall(id->id==resid, resid_vec)
         @views sbj_coords = coordinates[same_mol_indices[2:end], :]
         @views dist2first_mat = sbj_coords .- permutedims(coordinates[same_mol_indices[1], :])
-        for (coord, dist) in zip(sbj_coords, dist2first_mat)
-            coord.x = abs(dist.x) < half_box_size.x ? coord.x : coord.x - sign(dist.x) * box_size.x
-            coord.y = abs(dist.y) < half_box_size.y ? coord.y : coord.y - sign(dist.y) * box_size.y
-            coord.z = abs(dist.z) < half_box_size.z ? coord.z : coord.z - sign(dist.z) * box_size.z
+        if x
+            for (coord, dist) in zip(sbj_coords, dist2first_mat)
+                coord.x = abs(dist.x) < half_box_size.x ? coord.x : coord.x - sign(dist.x) * box_size.x
+            end
+        end
+
+        if y
+            for (coord, dist) in zip(sbj_coords, dist2first_mat)
+                coord.y = abs(dist.y) < half_box_size.y ? coord.y : coord.y - sign(dist.y) * box_size.y
+            end
+        end
+
+        if z
+            for (coord, dist) in zip(sbj_coords, dist2first_mat)
+                coord.z = abs(dist.z) < half_box_size.z ? coord.z : coord.z - sign(dist.z) * box_size.z
+            end
         end
     end
     new_trj
 end
 
-function fix_pbc!(trj::Trajectory{RealT}, box_size::Coordinate{<:Real}
+function fix_pbc!(trj::Trajectory{RealT}, box_size::Coordinate{<:Real};
+    x::Bool = true, y::Bool = true, z::Bool = true
     ) where RealT <: Real
 
-    # TODO: remove side effect
     # fix atom in over pbc residue based on first atom of the residue
     half_box_size = box_size * 0.5
 
@@ -604,10 +637,20 @@ function fix_pbc!(trj::Trajectory{RealT}, box_size::Coordinate{<:Real}
         same_mol_indices = findall(id->id==resid, resid_vec)
         @views sbj_coords = coordinates[same_mol_indices[2:end], :]
         @views dist2first_mat = sbj_coords .- permutedims(coordinates[same_mol_indices[1], :])
-        for (coord, dist) in zip(sbj_coords, dist2first_mat)
-            coord.x = abs(dist.x) < half_box_size.x ? coord.x : coord.x - sign(dist.x) * box_size.x
-            coord.y = abs(dist.y) < half_box_size.y ? coord.y : coord.y - sign(dist.y) * box_size.y
-            coord.z = abs(dist.z) < half_box_size.z ? coord.z : coord.z - sign(dist.z) * box_size.z
+        if x
+            for (coord, dist) in zip(sbj_coords, dist2first_mat)
+                coord.x = abs(dist.x) < half_box_size.x ? coord.x : coord.x - sign(dist.x) * box_size.x
+            end
+        end
+        if y
+            for (coord, dist) in zip(sbj_coords, dist2first_mat)
+                coord.y = abs(dist.y) < half_box_size.y ? coord.y : coord.y - sign(dist.y) * box_size.y
+            end
+        end
+        if z
+            for (coord, dist) in zip(sbj_coords, dist2first_mat)
+                coord.z = abs(dist.z) < half_box_size.z ? coord.z : coord.z - sign(dist.z) * box_size.z
+            end
         end
     end
 end

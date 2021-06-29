@@ -386,9 +386,11 @@ end
     groupid_vec = [1, 1, 2, 2, 2]
     box_size  = Coordinate(10.0f0, 10.0f0, 10.0f0)
     @test_nowarn fix_pbc(dcd.coordinates[:, 1], groupid_vec, box_size)
+    @test_nowarn fix_pbc(dcd.coordinates[:, 1], groupid_vec, box_size, z = false)
 
     pdb = read_pdb("data/test_position.pdb")
     @test_nowarn fix_pbc(pdb, box_size)
+    @test_nowarn fix_pbc(pdb, box_size, z = false)
 end
 
 @testset "fix_pbc!" begin
@@ -397,6 +399,7 @@ end
     dcd.attributes = pdb.attributes
     box_size = Coordinate(10.0, 10.0, 10.0)
     @test_nowarn fix_pbc!(dcd, box_size)
+    @test_nowarn fix_pbc!(dcd, box_size, z = false)
 end
 
 @testset "move_pbc_center" begin
