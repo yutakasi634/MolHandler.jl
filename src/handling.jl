@@ -569,7 +569,7 @@ end
     box_size::Coordinate{<:Real};
     x::Bool = true, y::Bool = true, z::Bool = true)::Vector{Coordinate}
 
-    Fix the atom group splited by periodic boundary box. This group is defined by groupid_vec which contain each particles group id.
+Fix the atom group splited by periodic boundary box. This group is defined by groupid_vec which contain each particles group id.
 For example, if your system have 3 atom, and atom 1 and 2 are group 1, and atom 3 is group 2, this groupid_vec is [1, 1, 2].
 If the group over the boundary of the box, the atoms in the group which separated from first atom of that move to the position where the atom locate without periodic boundary condition.
 You can specify the axies which applied fixing by x,y and option. If you set `z = false`, only x and y coordinate fixed and z don't change.
@@ -583,26 +583,27 @@ function fix_pbc(coordinates::Vector{<:Coordinate{RealT}}, groupid_vec::Vector{<
 end
 
 """
-    fix_pbc(trj::Trajectory, box_size::Coordinate;
+    fix_pbc(trj::Trajectory, groupid_vec::Vector{Integer},
+    box_size::Coordinate;
     x::Bool = true, y::Bool = true, z::Bool = true)::Trajectory
 
 Fix residues splited by periodic boundary condition. This is more specific version of fix_pbc function for trajectory handling.
-If the residue over the boundary of the box, the atoms in the residue which separated from first atom of that move to the position where the atom locate without periodic boundary condition.
+For example, if your system have 3 atom, and atom 1 and 2 are group 1, and atom 3 is group 2, this groupid_vec is [1, 1, 2].
+If the group over the boundary of the box, the atoms in the group which separated from first atom of that move to the position where the atom locate without periodic boundary condition.
 You can specify the axies which applied fixing by x,y and option. If you set `z = false`, only x and y coordinate fixed and z don't change.
 """
-function fix_pbc(trj::Trajectory{RealT}, box_size::Coordinate{<:Real};
+function fix_pbc(trj::Trajectory{RealT}, groupid_vec::Vector{<:Integer},
+    box_size::Coordinate{<:Real};
     x::Bool = true, y::Bool = true, z::Bool = true
     )::Trajectory{RealT} where RealT <: Real
 
     new_trj = deepcopy(trj)
     half_box_size = box_size * 0.5
 
-    resid_vec  = map(attr->attr.resid, new_trj.attributes)
-    unique_resid_vec = unique(resid_vec)
-    coordinates = new_trj.coordinates
-    attributes  = new_trj.attributes
-    for resid in unique_resid_vec
-        same_mol_indices = findall(id->id==resid, resid_vec)
+    unique_groupid_vec = unique(groupid_vec)
+    coordinates        = new_trj.coordinates
+    for groupid in unique_groupid_vec
+        same_mol_indices = findall(id->id==groupid, groupid_vec)
         @views sbj_coords = coordinates[same_mol_indices[2:end], :]
         @views dist2first_mat = sbj_coords .- permutedims(coordinates[same_mol_indices[1], :])
         if x

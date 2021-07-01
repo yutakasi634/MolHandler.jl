@@ -389,8 +389,8 @@ end
     @test_nowarn fix_pbc(dcd.coordinates[:, 1], groupid_vec, box_size, z = false)
 
     pdb = read_pdb("data/test_position.pdb")
-    @test_nowarn fix_pbc(pdb, box_size)
-    @test_nowarn fix_pbc(pdb, box_size, z = false)
+    @test_nowarn fix_pbc(pdb, groupid_vec, box_size)
+    @test_nowarn fix_pbc(pdb, groupid_vec, box_size, z = false)
 end
 
 @testset "fix_pbc!" begin
