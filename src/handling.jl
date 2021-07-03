@@ -569,8 +569,8 @@ end
     box_size::Coordinate{<:Real};
     x::Bool = true, y::Bool = true, z::Bool = true)::Vector{Coordinate}
 
-Fix the atom group splited by periodic boundary box. This group is defined by groupid_vec which contain each particles group id.
-For example, if your system have 3 atom, and atom 1 and 2 are group 1, and atom 3 is group 2, this groupid_vec is [1, 1, 2].
+Fix the atom group splited by periodic boundary box. This group is defined by `groupid_vec` which contain each particles group id.
+For example, if your system have 3 atom, and atom 1 and 2 are group 1, and atom 3 is group 2, this `groupid_vec` is [1, 1, 2].
 If the group over the boundary of the box, the atoms in the group which separated from first atom of that move to the position where the atom locate without periodic boundary condition.
 You can specify the axies which applied fixing by x,y and option. If you set `z = false`, only x and y coordinate fixed and z don't change.
 """
@@ -587,8 +587,8 @@ end
     box_size::Coordinate;
     x::Bool = true, y::Bool = true, z::Bool = true)::Trajectory
 
-Fix residues splited by periodic boundary condition. This is more specific version of fix_pbc function for trajectory handling.
-For example, if your system have 3 atom, and atom 1 and 2 are group 1, and atom 3 is group 2, this groupid_vec is [1, 1, 2].
+Fix residues splited by periodic boundary condition. This is more specific version of `fix_pbc` function for trajectory handling.
+For example, if your system have 3 atom, and atom 1 and 2 are group 1, and atom 3 is group 2, this `groupid_vec` is [1, 1, 2].
 If the group over the boundary of the box, the atoms in the group which separated from first atom of that move to the position where the atom locate without periodic boundary condition.
 You can specify the axies which applied fixing by x,y and option. If you set `z = false`, only x and y coordinate fixed and z don't change.
 """
