@@ -98,6 +98,28 @@ function geometric_center_of_mass(coordinates::Vector{<:Coordinate{RealT}};
 end
 
 """
+    center_of_mass(coordinates::Vector{Coordiante}, mass_vec{Real};
+                   atom_indices::Union{Vector, OrdinalRange, Colon} = :)
+    ::Coordinate{RealT}
+
+Calculate the (non-geometric) center of mass of Coordinate vector for specified atom indices.
+You have to pass mass information vector which have same length to coordinates vector.
+"""
+function center_of_mass(coordinates::Vector{<:Coordinate{RealT}}, mass_vec::Vector{<:Real};
+    atom_indices::Union{Vector, OrdinalRange, Colon} = :)::Coordinate{RealT} where RealT <: Real
+
+    if length(coordinates) != length(mass_vec)
+        throw(AssertionError("""
+                             coordinate vector and mass vector should be same length.
+                             """))
+    end
+
+    selected_coord = view(coordinates, atom_indices)
+    selected_mass  = view(mass_vec,    atom_indices)
+    sum(selected_coord .* selected_mass) / sum(selected_mass)
+end
+
+"""
     center_of_mass(query::Trajectory;
                    frame_indices::Union{Vector, OrdinalRange, Colon} = :,
                    atom_indices::Union{Vector, OrdinalRange, Colon} = :,

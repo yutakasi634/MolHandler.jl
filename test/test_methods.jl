@@ -195,7 +195,17 @@ end
     @test isapprox(Array(geometric_center_of_mass(coordinates, atom_indices = 1:2:3)), [1.0, 1.5, 3.0], atol = 1e-3)
 end
 
-@testset "center_of_mass" begin
+@testset "center_of_mass for Coordinate vector" begin
+    coord_vec = [Coordinate(11.1f0, 11.2f0, 11.3f0),
+                 Coordinate(21.1f0, 21.2f0, 21.3f0),
+                 Coordinate(31.1f0, 31.2f0, 31.3f0)]
+    mass_vec  = [2.0f0, 3.0f0, 4.0f0]
+
+    @test isapprox(Array(center_of_mass(coord_vec, mass_vec)), [23.3222f0, 23.4222f0, 23.5222f0],
+                   atol=1e-3)
+end
+
+@testset "center_of_mass for trajectory" begin
     coordinates = prepare_coordinates(3)
     trj_wo_attr = Trajectory(coordinates)
 
