@@ -1,26 +1,26 @@
-# reference from https://www.bioinfor.com/amino-acid/
+# reference from AICG2+ model parameters
 const RESNAME2MASS = Dict{String, Float32}(
-"ALA" =>  71.03711,
-"ARG" => 156.10111,
-"ASN" => 114.04293,
-"ASP" => 115.02694,
-"CYS" => 103.00919,
-"GLU" => 129.04259,
-"GLN" => 128.05858,
-"GLY" =>  57.02146,
-"HIS" => 137.05895,
-"ILE" => 113.08406,
-"LEU" => 113.08406,
-"LYS" => 128.09496,
-"MET" => 131.04049,
-"PHE" => 147.06841,
-"PRO" =>  97.05276,
-"SER" =>  87.03203,
-"THR" => 101.04768,
-"TRP" => 186.07931,
-"TYR" => 163.06333,
-"VAL" =>  99.06841,
-"HOH" =>  18.01528
+"ALA" =>  71.09,
+"ARG" => 156.19,
+"ASN" => 114.11,
+"ASP" => 115.09,
+"CYS" => 103.15,
+"GLU" => 129.12,
+"GLN" => 128.14,
+"GLY" =>  57.05,
+"HIS" => 137.14,
+"ILE" => 113.16,
+"LEU" => 113.16,
+"LYS" => 128.17,
+"MET" => 131.19,
+"PHE" => 147.18,
+"PRO" =>  97.12,
+"SER" =>  87.08,
+"THR" => 101.11,
+"TRP" => 186.21,
+"TYR" => 163.18,
+"VAL" =>  99.14,
+"HOH" =>  18.02
                                     )
 
 const ATOMNAME2MASS = Dict{String, Float32}(
