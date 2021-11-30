@@ -221,33 +221,51 @@ function read_pdb(filename::AbstractString; model = :unspecified)::Trajectory
     attributes = Vector{Attribute}()
     coordinates = Vector{Coordinate{Float32}}()
     first_frame = true
-    for line in lines
-        if occursin(r"^(ATOM|HETATM)", line)
-            x_coord  = parse(Float32, line[31:38])
-            y_coord  = parse(Float32, line[39:46])
-            z_coord  = parse(Float32, line[47:54])
-            push!(coordinates, Coordinate(x_coord, y_coord, z_coord))
-            if first_frame
-                atomid   = parse(Int64, line[7:11])
-                atomname = strip(line[13:16])
-                resname  = strip(line[18:20])
-                resid    = parse(Int64, line[23:26])
+    if model == :unspecified || model == :AA
+        for line in lines
+            if occursin(r"^(ATOM|HETATM)", line)
+                x_coord  = parse(Float32, line[31:38])
+                y_coord  = parse(Float32, line[39:46])
+                z_coord  = parse(Float32, line[47:54])
+                push!(coordinates, Coordinate(x_coord, y_coord, z_coord))
+                if first_frame
+                    atomid   = parse(Int64, line[7:11])
+                    atomname = strip(line[13:16])
+                    resname  = strip(line[18:20])
+                    resid    = parse(Int64, line[23:26])
 
-                if model == :unspecified
-                    push!(attributes, Attribute(resname = resname, resid = resid,
-                                                atomname = atomname, atomid = atomid))
-                elseif model == :AA
-                    push!(attributes, Attribute(resname = resname, resid = resid,
-                                                atomname = atomname, atomid = atomid,
-                                                mass = atom_mass(atomname)))
-                elseif model == :CA
-                    push!(attributes, Attribute(resname = resname, resid = resid,
-                                               atomname = atomname, atomid = atomid,
-                                               mass = residue_mass(resname)))
+                    if model == :unspecified
+                        push!(attributes, Attribute(resname = resname, resid = resid,
+                                                    atomname = atomname, atomid = atomid))
+                    elseif model == :AA
+                        push!(attributes, Attribute(resname = resname, resid = resid,
+                                                    atomname = atomname, atomid = atomid,
+                                                    mass = atom_mass(atomname)))
+                    end
                 end
+            elseif occursin(r"^END", line) && first_frame
+                first_frame = false
             end
-        elseif occursin(r"^END", line) && first_frame
-            first_frame = false
+        end
+    elseif model == :CA
+        for line in lines
+            if occursin(r"^(ATOM|HETATM)", line) && strip(line[13:16]) == "CA"
+                x_coord  = parse(Float32, line[31:38])
+                y_coord  = parse(Float32, line[39:46])
+                z_coord  = parse(Float32, line[47:54])
+                push!(coordinates, Coordinate(x_coord, y_coord, z_coord))
+                if first_frame
+                    atomid   = parse(Int64, line[7:11])
+                    resname  = strip(line[18:20])
+                    resid    = parse(Int64, line[23:26])
+
+                    push!(attributes, Attribute(resname = resname, resid = resid,
+                                                atomname = "CA", atomid = atomid,
+                                                mass = residue_mass(resname)))
+                end
+            elseif occursin(r"^END", line) && first_frame
+                first_frame = false
+            end
         end
     end
 

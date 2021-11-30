@@ -50,12 +50,11 @@ end
     @test isapprox(trj.attributes[123].mass, 14.0069, atol = 1e-3)
 
     trj = read_pdb("data/1aki.pdb", model = :CA)
-    @test isapprox(Array(trj.coordinates[1,1]), [35.365, 22.342, -11.980], atol = 1e-3)
-    @test isapprox(Array(trj.coordinates[1079, 1]), [43.755, 23.843, 8.038], atol = 1e-3)
-    @test trj.attributes[123].atomname == "N"
-    @test trj.attributes[200].resid == 26
-    @test trj.attributes[231].resname == "VAL"
-    @test isapprox(trj.attributes[231].mass, 99.06841, atol = 1e-3)
+    @test isapprox(Array(trj.coordinates[1,1]),    [35.892, 21.073, -11.427], atol = 1e-3)
+    @test isapprox(Array(trj.coordinates[129, 1]), [41.094, 12.084,   6.273], atol = 1e-3)
+    @test trj.attributes[26].resid == 26
+    @test trj.attributes[29].resname == "VAL"
+    @test isapprox(trj.attributes[29].mass, 99.06841, atol = 1e-3)
 
     # test for multi frame pdb case
     trj = read_pdb("data/test_position.pdb")
