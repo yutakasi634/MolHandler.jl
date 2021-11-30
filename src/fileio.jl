@@ -211,7 +211,7 @@ end
 
 Return Trajectory object which filled all field.
 If you set `:AA` to model field, this function set the mass of particle based on atomname field.
-If you set `:CA` to model field, this function set the mass of particcle mase on resname field.
+If you set `:CA` to model field, this function only read CA atom and set the mass of particcle mase on resname field.
 """
 function read_pdb(filename::AbstractString; model = :unspecified)::Trajectory
     lines = open(filename, "r") do io
