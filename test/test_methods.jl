@@ -54,7 +54,7 @@ end
     @test isapprox(Array(trj.coordinates[129, 1]), [41.094, 12.084,   6.273], atol = 1e-3)
     @test trj.attributes[26].resid == 26
     @test trj.attributes[29].resname == "VAL"
-    @test isapprox(trj.attributes[29].mass, 99.06841, atol = 1e-3)
+    @test isapprox(trj.attributes[29].mass, 99.14, atol = 1e-3)
 
     # test for multi frame pdb case
     trj = read_pdb("data/test_position.pdb")
@@ -373,8 +373,8 @@ end
 end
 
 @testset "residue_mass" begin
-    @test isapprox(residue_mass("ALA"), 71.03711, atol = 1e-5)
-    @test isapprox(residue_mass("HOH"), 18.01528, atol = 1e-5)
+    @test isapprox(residue_mass("ALA"), 71.09, atol = 1e-5)
+    @test isapprox(residue_mass("HOH"), 18.02, atol = 1e-5)
 end
 
 @testset "distance_pbc" begin
