@@ -604,14 +604,87 @@ function fix_pbc(coordinates::Vector{<:Coordinate{RealT}}, groupid_vec::Vector{<
     fix_pbc(coordinates, groupid_vec, box_size, half_box_size, x=x, y=y, z=z)
 end
 
+# This function get half_box_size, because if process will apply to all trajectory,
+# half box size calculation will occur every time frame, this is overhead.
+function fix_pbc!(coordinates::Vector{<:Coordinate{RealT}}, contact_matrix::Matrix{Bool},
+    box_size::Coordinate{<:Real}, half_box_size::Coordinate{<:Real};
+    x::Bool= true, y::Bool = true, z::Bool = true
+    )::Vector{<:Coordinate{RealT}} where RealT <: Real
+
+    if length(coordinates) != size(contact_matrix)[1] || length(coordinates) != size(contact_matrix)[2]
+        throw(AssertionError("""
+                             the size of coordinate vector and that of each dimension of contact matrix should be same length.
+                             """))
+    end
+
+    fixed_atom_array = fill(false, length(coordinates))
+    stack_array      = Array{Int64, 1}()
+    atom_idx         = 1
+
+    for atom_idx in 1:length(coordinates)
+        # if atom already fixed, go to next atom
+        if fixed_atom_array[atom_idx]
+            continue
+        end
+
+        fixed_atom_array[atom_idx] = true
+        push!(stack_array, atom_idx)
+        while !isempty(stack_arr)
+            ref_atom_idx = popfirst!(stack_arr)
+            ref_atom     = coordinates[ref_atom_idx]
+            for (target_idx, is_target_atom) in enumerate(contact_matrix[ref_atom_idx, :])
+                if !is_target_atom || fixed_atom_array[target_idx]
+                    continue
+                end
+                fixed_atom_array[target_idx] = true
+                push!(stack_array, target_idx)
+                target_atom = coordinates[target_idx]
+                dist        = target_atom - ref_atom
+
+                if x
+                    target_atom.x = abs(dist.x) < half_box_size.x ? target_atom.x : target_atom.x - sign(dist.x) * box_size.x
+                end
+
+                if y
+                    target_atom.y = abs(dist.y) < half_box_size.y ? target_atom.y : target_atom.y - sign(dist.y) * box_size.y
+                end
+
+                if z
+                    target_atom.z = abs(dist.z) < half_box_size.z ? target_atom.z : target_atom.z - sign(dist.z) * box_size.z
+                end
+            end
+        end
+    end
+
+    coordinates
+end
+
+
 """
-    fix_pbc(trj::Trajectory, groupid_vec::Vector{Integer},
+    fix_pbc!(coordinates::Vector{Coordinate}, contact_matrix::Matrix{Bool},
+    box_size::Coordinate{<:Real};
+    x::Bool = true, y::Bool = true, z::Bool = true)::Vector{Coordinate}
+
+Fix the atom group splited by periodic boundary box. This group is juged by contact_matrix.
+If the group over the boundary of the box, the atoms in the group which separated from first atom of that move to the position where the atom locate without periodic boundary condition.
+You can specify the axies which applied fixing by x,y and option. If you set `z = false`, only x and y coordinate fixed and z don't change.
+"""
+function fix_pbc!(coordinates::Vector{<:Coordinate{RealT}}, contact_matrix::Matrix{Bool},
+    box_size::Coordinate{<:Real};
+    x::Bool = true, y::Bool = true, z::Bool = true
+    )::Vector{<:Coordinate{RealT}} where RealT <: Real
+    half_box_size = box_size * 0.5
+    fix_pbc(coordinates, contact_matrix, box_size, half_box_size, x=x, y=y, z=z)
+end
+
+"""
+    fix_pbc!(trj::Trajectory, groupid_vec::Vector{Integer},
     box_size::Coordinate;
     x::Bool = true, y::Bool = true, z::Bool = true)::Trajectory
 
 Fix residues splited by periodic boundary condition. This is more specific version of `fix_pbc` function for trajectory handling.
 For example, if your system have 3 atom, and atom 1 and 2 are group 1, and atom 3 is group 2, this `groupid_vec` is [1, 1, 2].
-If the group over the boundary of the box, the atoms in the group which separated from first atom of that move to the position where the atom locate without periodic boundary condition.
+If the group over the boundary of the box, the atoms in the group which more than half a box away from the first atom of that move to the position where the atom locate without periodic boundary condition.
 You can specify the axies which applied fixing by x,y and option. If you set `z = false`, only x and y coordinate fixed and z don't change.
 """
 function fix_pbc(trj::Trajectory{RealT}, groupid_vec::Vector{<:Integer},
