@@ -606,10 +606,10 @@ end
 
 # This function get half_box_size, because if process will apply to all trajectory,
 # half box size calculation will occur every time frame, this is overhead.
-function fix_pbc!(coordinates::Vector{<:Coordinate{RealT}}, contact_matrix::Matrix{Bool},
+function fix_pbc!(coordinates::ArrayT, contact_matrix::Matrix{Bool},
     box_size::Coordinate{<:Real}, half_box_size::Coordinate{<:Real};
     x::Bool= true, y::Bool = true, z::Bool = true
-    )::Vector{<:Coordinate{RealT}} where RealT <: Real
+    ) where ArrayT <: AbstractArray{<:Coordinate{<:Real}, 1}
 
     if length(coordinates) != size(contact_matrix)[1] || length(coordinates) != size(contact_matrix)[2]
         throw(AssertionError("""
@@ -617,27 +617,26 @@ function fix_pbc!(coordinates::Vector{<:Coordinate{RealT}}, contact_matrix::Matr
                              """))
     end
 
-    fixed_atom_array = fill(false, length(coordinates))
-    stack_array      = Array{Int64, 1}()
-    atom_idx         = 1
+    fixed_atom_arr = fill(false, length(coordinates))
+    stack_arr      = Array{Int64, 1}()
 
     for atom_idx in 1:length(coordinates)
         # if atom already fixed, go to next atom
-        if fixed_atom_array[atom_idx]
+        if fixed_atom_arr[atom_idx]
             continue
         end
 
-        fixed_atom_array[atom_idx] = true
-        push!(stack_array, atom_idx)
+        fixed_atom_arr[atom_idx] = true
+        push!(stack_arr, atom_idx)
         while !isempty(stack_arr)
             ref_atom_idx = popfirst!(stack_arr)
             ref_atom     = coordinates[ref_atom_idx]
-            for (target_idx, is_target_atom) in enumerate(contact_matrix[ref_atom_idx, :])
-                if !is_target_atom || fixed_atom_array[target_idx]
+            for (target_idx, is_target_atom) in enumerate(view(contact_matrix, ref_atom_idx, :))
+                if !is_target_atom || fixed_atom_arr[target_idx]
                     continue
                 end
-                fixed_atom_array[target_idx] = true
-                push!(stack_array, target_idx)
+                fixed_atom_arr[target_idx] = true
+                push!(stack_arr, target_idx)
                 target_atom = coordinates[target_idx]
                 dist        = target_atom - ref_atom
 
@@ -655,8 +654,6 @@ function fix_pbc!(coordinates::Vector{<:Coordinate{RealT}}, contact_matrix::Matr
             end
         end
     end
-
-    coordinates
 end
 
 
@@ -669,16 +666,16 @@ Fix the atom group splited by periodic boundary box. This group is juged by cont
 If the group over the boundary of the box, the atoms in the group which separated from first atom of that move to the position where the atom locate without periodic boundary condition.
 You can specify the axies which applied fixing by x,y and option. If you set `z = false`, only x and y coordinate fixed and z don't change.
 """
-function fix_pbc!(coordinates::Vector{<:Coordinate{RealT}}, contact_matrix::Matrix{Bool},
+function fix_pbc!(coordinates::ArrayT, contact_matrix::Matrix{Bool},
     box_size::Coordinate{<:Real};
     x::Bool = true, y::Bool = true, z::Bool = true
-    )::Vector{<:Coordinate{RealT}} where RealT <: Real
+    ) where ArrayT <: AbstractArray{<:Coordinate{<:Real}, 1}
     half_box_size = box_size * 0.5
-    fix_pbc(coordinates, contact_matrix, box_size, half_box_size, x=x, y=y, z=z)
+    fix_pbc!(coordinates, contact_matrix, box_size, half_box_size, x=x, y=y, z=z)
 end
 
 """
-    fix_pbc!(trj::Trajectory, groupid_vec::Vector{Integer},
+    fix_pbc(trj::Trajectory, groupid_vec::Vector{Integer},
     box_size::Coordinate;
     x::Bool = true, y::Bool = true, z::Bool = true)::Trajectory
 
