@@ -52,6 +52,7 @@ This contains 4 fields like below.
 - attributes  : Vector{[`Attribute`](@ref)}
 - natom       : Number of atoms.
 - nframe      : Number of frames in the trajectory.
+- box         : Vector{[`Coordinate`](@ref)} of periodic box size for each frame
 
 The column of coordinates matrix means one snapshot.
 The row of coordinates matrix means time series of one atom.
@@ -66,20 +67,22 @@ In this case, one snapshot correspond to `[a b c]`.
 
 The constructor is below.
 
-    function Trajectory(coordinates::Array{Coordinate, 2},
-                        attributes::Vector{Attribute} = [Attribute() for i=1:length(coordinates)])
+    function Trajectory(coordinates::Array{Coordinate, 2};
+                        attributes::Vector{Attribute} = [Attribute() for i=1:length(coordinates)],
+                        box::Vector{Coordinate} = Vector{Coordinate}())
 """
 mutable struct Trajectory{RealT <: Real}
     coordinates::Array{Coordinate{RealT}}
     attributes::Vector{Attribute}
+    boxes::Vector{Coordinate{RealT}}
     natom::Int64
     nframe::Int64
 
-    function Trajectory(coordinates::Array{<:Coordinate{RealT}, 2},
-        attributes::Array{Attribute, 1} = [Attribute() for i=1:size(coordinates, 1)]
-        ) where RealT <: Real
+    function Trajectory(coordinates::Array{<:Coordinate{RealT}, 2};
+        attributes::Array{Attribute, 1} = [Attribute() for i=1:size(coordinates, 1)],
+        boxes::Vector{Coordinate{RealT}} = Vector{Coordinate{RealT}}()) where RealT <: Real
 
-        new{RealT}(coordinates, attributes, size(coordinates, 1), size(coordinates, 2))
+        new{RealT}(coordinates, attributes, boxes, size(coordinates, 1), size(coordinates, 2))
     end
 end
 

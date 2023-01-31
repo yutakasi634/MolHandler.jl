@@ -50,9 +50,10 @@ function clip_trajectory(query::IntT, trj::Trajectory{RealT};
     )::Trajectory{RealT} where {IntT <: Integer, RealT <: Real}
 
     if query_key == :frame
-        Trajectory(reshape(trj.coordinates[:, query], (trj.natom, 1)), trj.attributes)
+        Trajectory(reshape(trj.coordinates[:, query], (trj.natom, 1)), attributes=trj.attributes)
     elseif query_key == :atom
-        Trajectory(reshape(trj.coordinates[query, :], (1, trj.nframe)), [trj.attributes[query]])
+        Trajectory(reshape(trj.coordinates[query, :], (1, trj.nframe)),
+                   attributes=[trj.attributes[query]])
     else
         throw(ArgumentError("""
                             clip_trajectory: invalid query key :$(query_key) here
@@ -68,9 +69,9 @@ function clip_trajectory(query::Union{Vector{IntT}, OrdinalRange}, trj::Trajecto
     )::Trajectory{RealT} where {IntT <: Integer, RealT <: Real}
 
     if query_key == :frame
-        Trajectory(trj.coordinates[:, query], trj.attributes)
+        Trajectory(trj.coordinates[:, query], attributes=trj.attributes)
     elseif query_key == :atom
-        Trajectory(trj.coordinates[query, :], trj.attributes[query])
+        Trajectory(trj.coordinates[query, :], attributes=trj.attributes[query])
     else
         throw(ArgumentError("""
                             clip_trajectory: invalid query key :$(query_key) here

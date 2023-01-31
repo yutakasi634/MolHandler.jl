@@ -69,6 +69,7 @@ function read_dcd(filename::String;
                   frame_indices::Union{Vector, OrdinalRange, Colon, Nothing} = nothing,
                   step::Union{Int, Nothing} = nothing)::Trajectory
     coordinates_time_series = Matrix{Coordinate{Float32}}(undef, 0, 0)
+    boxes_time_series = Vector{Coordinate{Float32}}()
     target_frame_indices = frame_indices
 
     open(filename, "r") do io
@@ -106,9 +107,15 @@ function read_dcd(filename::String;
             Matrix{Coordinate{Float32}}(undef, number_of_atom, length(target_frame_indices))
         output_frame_idx = 1
         for frame_idx in 1:total_frame
-            # skip unitcell block
+            # read unitcell block
             if unitcell_flag
-                skip(io, 56) # skip unitcell block size (4 + 8 * 6 + 4)
+                skip(io, 4) # skip block size part
+                unitcell_info = Array{Float64, 1}(undef, 6)
+                read!(io, unitcell_info)
+                skip(io, 4) # skip block size part
+                push!(boxes_time_series, Coordinate(unitcell_info[1],
+                                                    unitcell_info[3],
+                                                    unitcell_info[6]))
             end
 
             # read x coordinates
@@ -136,7 +143,7 @@ function read_dcd(filename::String;
             end
         end
     end
-    Trajectory(coordinates_time_series)
+    Trajectory(coordinates_time_series, boxes=boxes_time_series)
 end
 
 """
@@ -272,7 +279,7 @@ function read_pdb(filename::AbstractString; model = :unspecified)::Trajectory
     atom_num  = length(attributes)
     @assert mod(length(coordinates), atom_num) == 0 "All frame should contain same number atoms."
     frame_num = div(length(coordinates), atom_num)
-    Trajectory(reshape(coordinates, (atom_num, frame_num)), attributes)
+    Trajectory(reshape(coordinates, (atom_num, frame_num)), attributes=attributes)
 end
 
 """
@@ -403,7 +410,7 @@ function read_xyz(filename::AbstractString)::Trajectory
             end
         end
     end
-    Trajectory(coordinates_time_series, attributes)
+    Trajectory(coordinates_time_series, attributes=attributes)
 end
 
 """

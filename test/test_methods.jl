@@ -15,13 +15,16 @@ end
     @test isapprox(Array(trj.coordinates[5,1001]), [-2.577, 88.384, -7.513], atol = 1e-3)
 
     trj_frame = read_dcd("data/test_position.dcd", frame_indices = 1:10:1001)
-    @test isapprox(Array(trj_frame.coordinates[1,  1]), Array(trj.coordinates[1,    1]), atol = 1e-3)
-    @test isapprox(Array(trj_frame.coordinates[5,101]), Array(trj.coordinates[5, 1001]), atol = 1e-3)
+    @test isapprox(Array(trj_frame.coordinates[1,   1]), Array(trj.coordinates[1,    1]), atol = 1e-3)
+    @test isapprox(Array(trj_frame.coordinates[5, 101]), Array(trj.coordinates[5, 1001]), atol = 1e-3)
 
     trj_step = read_dcd("data/test_position.dcd", step = 10)
-    @test isapprox(Array(trj_step.coordinates[1,  1]), Array(trj.coordinates[1,    1]), atol = 1e-3)
-    @test isapprox(Array(trj_step.coordinates[5,101]), Array(trj.coordinates[5, 1001]), atol = 1e-3)
+    @test isapprox(Array(trj_step.coordinates[1,   1]), Array(trj.coordinates[1,    1]), atol = 1e-3)
+    @test isapprox(Array(trj_step.coordinates[5, 101]), Array(trj.coordinates[5, 1001]), atol = 1e-3)
 
+    trj_with_box = read_dcd("data/test_position_with_box.dcd")
+    @test isapprox(Array(trj_with_box.boxes[  1]), [  64.0,   64.0, 100.0], atol = 1e-3)
+    @test isapprox(Array(trj_with_box.boxes[100]), [63.391, 63.391, 100.0], atol = 1e-3)
 end
 
 @testset "write_dcd function" begin
@@ -122,7 +125,7 @@ end
     coordinates[2,1] = Coordinate([3.1f0, 3.2f0, 3.2f0])
     coordinates[2,2] = Coordinate([4.1f0, 4.2f0, 4.1f0])
     attributes  = [Attribute(atomname = "hoge"), Attribute(atomname = "huga")]
-    trj = Trajectory(coordinates, attributes)
+    trj = Trajectory(coordinates, attributes=attributes)
     frame1 = get_frame(1, trj)
     frame2 = get_frame(2, trj)
     @test isapprox(Array(frame1.coordinates[1])[1], 1.1f0, atol = 1e-7)
@@ -136,7 +139,7 @@ end
     coordinates[2,1] = Coordinate([3.1f0, 3.2f0, 3.2f0])
     coordinates[2,2] = Coordinate([4.1f0, 4.2f0, 4.1f0])
     attributes  = [Attribute(atomname = "hoge"), Attribute(atomname = "huga")]
-    trj = Trajectory(coordinates, attributes)
+    trj = Trajectory(coordinates, attributes=attributes)
     atom1_series = get_atom(1, trj)
     atom2_series = get_atom(2, trj)
     @test isapprox(atom1_series[1].coordinate.x, 1.1f0, atol=1e-7)
@@ -152,7 +155,7 @@ end
 @testset "clip_trajectory(query::Integer)" begin
     coordinates = prepare_coordinates(3)
     attributes = [Attribute(atomname = "hoge"), Attribute(atomname = "huga"), Attribute(atomname = "piyo")]
-    trj = Trajectory(coordinates, attributes)
+    trj = Trajectory(coordinates, attributes=attributes)
 
     cliped_frame_int = clip_trajectory(2, trj)
     @test isapprox(cliped_frame_int.coordinates[2, 1].x, trj.coordinates[2, 2].x, atol = 1e-3)
@@ -167,7 +170,7 @@ end
 @testset "clip_trajectory(query::Union{Array, StepRange})" begin
     coordinates = prepare_coordinates(3)
     attributes = [Attribute(atomname = "hoge"), Attribute(atomname = "huga"), Attribute(atomname = "piyo")]
-    trj = Trajectory(coordinates, attributes)
+    trj = Trajectory(coordinates, attributes=attributes)
 
     cliped_frame_array = clip_trajectory([2, 3], trj)
     @test isapprox(cliped_frame_array.coordinates[2, 2].x, trj.coordinates[2, 3].x, atol = 1e-3)
@@ -211,7 +214,7 @@ end
     @test_throws ArgumentError center_of_mass(trj_wo_attr)
 
     attributes = [Attribute(mass = 2.0f0), Attribute(mass = 3.0f0), Attribute(mass = 4.0f0)]
-    trj = Trajectory(coordinates, attributes)
+    trj = Trajectory(coordinates, attributes=attributes)
 
     @test isapprox(Array(center_of_mass(trj)[1]), [23.3222f0, 23.4222f0, 23.5222f0], atol = 1e-3)
     @test isapprox(Array(center_of_mass(trj, atom_indices = 1:2:3)[2]), [25.4333f0, 25.5333f0, 25.6333f0],
@@ -332,7 +335,7 @@ end
 @testset "radius_of_gyration" begin
     coordinates = prepare_coordinates(3)
     attributes = [Attribute(mass = 2.0f0), Attribute(mass = 3.0f0), Attribute(mass = 4.0f0)]
-    trj = Trajectory(coordinates, attributes)
+    trj = Trajectory(coordinates, attributes=attributes)
 
     rg_arr     = Array{Float32, 1}(undef, 3)
     geo_rg_arr = Array{Float32, 1}(undef, 3)
