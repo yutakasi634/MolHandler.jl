@@ -6,3 +6,5 @@
 /Manifest.toml
 /dev/
 docs/build/
+test/data/write*
+*.swp
