@@ -400,7 +400,18 @@ end
     @test_nowarn fix_pbc(dcd.coordinates[:, 1], groupid_vec, box_size)
     @test_nowarn fix_pbc(dcd.coordinates[:, 1], groupid_vec, box_size, z = false)
 
+    dcd_with_box = read_dcd("data/test_position_with_box.dcd")
+    groupid_vec = Array{Integer, 1}()
+    for mol_idx in 1:128
+        for atom_idx in 1:5
+            push!(groupid_vec, mol_idx)
+        end
+    end
+    @test_nowarn fix_pbc(dcd_with_box, groupid_vec)
+    @test_nowarn fix_pbc(dcd_with_box, groupid_vec, z = false)
+
     pdb = read_pdb("data/test_position.pdb")
+    groupid_vec = [1, 1, 2, 2, 2]
     @test_nowarn fix_pbc(pdb, groupid_vec, box_size)
     @test_nowarn fix_pbc(pdb, groupid_vec, box_size, z = false)
 end

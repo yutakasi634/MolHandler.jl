@@ -690,15 +690,21 @@ function fix_pbc(trj::Trajectory{RealT}, groupid_vec::Vector{<:Integer},
     x::Bool = true, y::Bool = true, z::Bool = true
     )::Trajectory{RealT} where RealT <: Real
 
+    if size(trj.coordinates)[1] != length(groupid_vec)
+        throw(AssertionError("""
+                             groupid_vec do not have appropriate length. This length is $(length(groupid_vec)), but the number of particle in trajectory is $(size(trj.coordinates)[1]).
+                             """))
+    end
+
     new_trj = deepcopy(trj)
     half_box_size = box_size * 0.5
 
     unique_groupid_vec = unique(groupid_vec)
     coordinates        = new_trj.coordinates
     for groupid in unique_groupid_vec
-        same_mol_indices = findall(id->id==groupid, groupid_vec)
-        @views sbj_coords = coordinates[same_mol_indices[2:end], :]
-        @views dist2first_mat = sbj_coords .- permutedims(coordinates[same_mol_indices[1], :])
+        same_group_indices = findall(id->id==groupid, groupid_vec)
+        @views sbj_coords = coordinates[same_group_indices[2:end], :]
+        @views dist2first_mat = sbj_coords .- permutedims(coordinates[same_group_indices[1], :])
         if x
             for (coord, dist) in zip(sbj_coords, dist2first_mat)
                 coord.x = abs(dist.x) < half_box_size.x ? coord.x : coord.x - sign(dist.x) * box_size.x
@@ -714,6 +720,49 @@ function fix_pbc(trj::Trajectory{RealT}, groupid_vec::Vector{<:Integer},
         if z
             for (coord, dist) in zip(sbj_coords, dist2first_mat)
                 coord.z = abs(dist.z) < half_box_size.z ? coord.z : coord.z - sign(dist.z) * box_size.z
+            end
+        end
+    end
+    new_trj
+end
+
+function fix_pbc(trj::Trajectory{RealT}, groupid_vec::Vector{<:Integer};
+    x::Bool = true, y::Bool = true, z::Bool = true
+    )::Trajectory{RealT} where RealT <: Real
+
+    if size(trj.coordinates)[2] != length(trj.boxes)
+        throw(AssertionError("""
+                             Trajctory object do not have appropriate box information. The number of frame is $(size(trj.coordinates)[2]), but the number of box information is $(length(trj.boxes)).
+                             """))
+    end
+
+    unique_groupid_vec = unique(groupid_vec)
+
+    new_trj = deepcopy(trj)
+    coordinates = new_trj.coordinates
+    boxes       = new_trj.boxes
+
+    for frame_idx in 1:size(coordinates)[2]
+        box_size      = boxes[frame_idx]
+        half_box_size = box_size * 0.5
+        for groupid in unique_groupid_vec
+            same_group_indices = findall(id->id==groupid, groupid_vec)
+            @views sbj_coords = coordinates[same_group_indices[2:end], frame_idx]
+            @views dist2first = sbj_coords .- coordinates[same_group_indices[1], frame_idx]
+            if x
+                for (coord, dist) in zip(sbj_coords, dist2first)
+                    coord.x = abs(dist.x) < half_box_size.x ? coord.x : coord.x - sign(dist.x) * box_size.x
+                end
+            end
+            if y
+                for (coord, dist) in zip(sbj_coords, dist2first)
+                    coord.y = abs(dist.y) < half_box_size.y ? coord.y : coord.y - sign(dist.y) * box_size.y
+                end
+            end
+            if z
+                for (coord, dist) in zip(sbj_coords, dist2first)
+                    coord.z = abs(dist.z) < half_box_size.z ? coord.z : coord.z - sign(dist.z) * box_size.z
+                end
             end
         end
     end
