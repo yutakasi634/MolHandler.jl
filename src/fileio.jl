@@ -170,7 +170,9 @@ function write_dcd(filename::String, trj::Trajectory;
         write(io, Int32(unit_num))   # number of units
         write(io, zeros(Int32, 4))
         write(io, time_step)         # time step
-        write(io, zeros(Int32, 9))
+        unitcell_flag = !isempty(trj.boxes)
+        write(io, Int32(unitcell_flag))
+        write(io, zeros(Int32, 8))
         write(io, Int32(24))         # version
         write(io, Int32(84))         # block size
 
@@ -188,7 +190,22 @@ function write_dcd(filename::String, trj::Trajectory;
         # write body block
         coord_part_size = 4 * trj.natom
         each_block_size = 8 + coord_part_size
+        box_block_size  = 8 * 6
         for frame_idx in 1:trj.nframe
+
+            # write box info block
+            if unitcell_flag
+                box_size = trj.boxes[frame_idx]
+                write(io, Int32(box_block_size))
+                write(io, Float64(box_size.x))
+                write(io, Float64(90.0))
+                write(io, Float64(box_size.y))
+                write(io, Float64(90.0))
+                write(io, Float64(90.0))
+                write(io, Float64(box_size.z))
+                write(io, Int32(box_block_size))
+            end
+
             # write x coordinates
             write(io, Int32(coord_part_size))
             for atom_idx in 1:trj.natom
