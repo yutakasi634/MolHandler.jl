@@ -425,6 +425,12 @@ end
     @test_nowarn fix_pbc!(dcd, box_size, z = false)
 end
 
+@testset "fix_pbc_along_time" begin
+    dcd = read_dcd("data/test_position_with_box.dcd")
+    @test_nowarn fix_pbc_along_time(dcd)
+    @test_nowarn fix_pbc_along_time(dcd, z = false)
+end
+
 @testset "move_pbc_center" begin
     first_coord  = Coordinate(1.0, 2.0, 2.0)
     second_coord = Coordinate(2.5, 2.0, 2.0)

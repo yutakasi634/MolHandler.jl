@@ -802,6 +802,58 @@ function fix_pbc!(trj::Trajectory{RealT}, box_size::Coordinate{<:Real};
     end
 end
 
+function fix_pbc_along_time(trj::Trajectory{RealT};
+    x::Bool = true, y::Bool = true, z::Bool = true
+    )::Trajectory{RealT} where RealT <: Real
+
+    new_trj     = deepcopy(trj)
+    coordinates = new_trj.coordinates
+    boxes       = new_trj.boxes
+
+    @views previous_coords = coordinates[:, 1]
+    for frame_idx in 2:size(coordinates)[2]
+        box_size      = boxes[frame_idx]
+        half_box_size = box_size * 0.5
+
+        @views sbj_coords = coordinates[:, frame_idx]
+        dist2previous = sbj_coords .- previous_coords
+
+        if x
+            for (coord, dist) in zip(sbj_coords, dist2previous)
+                if abs(dist.x) > half_box_size.x
+                    fix_coef =
+                        sign(dist.x) *
+                        (div((abs(dist.x) - half_box_size.x), box_size.x) + 1)
+                    coord.x = coord.x - fix_coef * box_size.x
+                end
+            end
+        end
+        if y
+            for (coord, dist) in zip(sbj_coords, dist2previous)
+                if abs(dist.y) > half_box_size.y
+                    fiy_coef =
+                        sign(dist.y) *
+                        (div((abs(dist.y) - half_box_size.y), box_size.y) + 1)
+                    coord.y = coord.y - fiy_coef * box_size.y
+                end
+            end
+        end
+        if z
+            for (coord, dist) in zip(sbj_coords, dist2previous)
+                if abs(dist.z) > half_box_size.z
+                    fiz_coef =
+                        sign(dist.z) *
+                        (div((abs(dist.z) - half_box_size.z), box_size.z) + 1)
+                    coord.z = coord.z - fiz_coef * box_size.z
+                end
+            end
+        end
+
+        @views previous_coords = sbj_coords
+    end
+    new_trj
+end
+
 """
     move_pbc_center(coordinates::Vector{Coordinate},
                     new_center::Coordinate, box_size::Coordinate)
