@@ -1,5 +1,6 @@
 import Base.Threads
 import LinearAlgebra
+import Random
 
 """
     get_frame(frame_idx::Int64, trajectory::Trajectory)
@@ -874,4 +875,70 @@ function move_pbc_center(coordinates::Vector{<:Coordinate{RealT}},
         coord.z = abs(dist.z) < half_box.z ? coord.z : coord.z - sign(dist.z) * box_size.z
     end
     new_coords
+end
+
+"""
+    sasa(coordinates::Vector{Coordinate}, radiuses::Vector{Real},
+         solvent_radius::RealT = 1.4,     MCtrial_num::Integer = 1000
+         seed::Integer         = undef)::Vector{Real}
+Calculate Solvent Accessible Surface Area(SASA) for each particle.
+The length of radiuses should match to the number of particles in coordinates.
+The default value of solvent radius, 1.4, corresponds to water case 1.4 Å.
+MCtrial means MonteCarlo trial num for calculate the solvent accessible area of each particle.
+For each particle, this function generate the point MCtrial times on the solvent accessible surface and count the number of non-overlapping dots with other particle.
+"""
+function sasa(coordinates::Vector{Coordinate{RealT}}, radiuses::Vector{RealT},
+    solvent_radius::RealT = RealT(1.4), mctrial_num::Integer = 1000,
+    seed                  = undef
+    )::Vector{RealT} where RealT <: Real
+
+    @assert length(coordinates) == length(radiuses) "the length of coordinates vector and radiuses vector must be same."
+
+    rng = Random.MersenneTwister()
+    if seed != undef
+        rng.seed!(seed)
+    end
+
+    sasa_arr   = Vector{RealT}()
+    n_particle = length(coordinates)
+    for sbj_coord_idx in 1:n_particle
+        # search neigbour particles
+        sbj_coord = coordinates[sbj_coord_idx]
+        sbj_radi  = radiuses[sbj_coord_idx]
+        neibour_indices = Vector{Integer}()
+        for coord_idx in 1:n_particle
+            coord = coordinates[coord_idx]
+            dist  = norm(sbj_coord - coord)
+            if dist < sbj_radi + radiuses[coord_idx] + solvent_radius*2
+                push!(neibour_indices, coord_idx)
+            end
+        end
+
+        access_count = 0
+        sa_radi      = sbj_radi + solvent_radius
+        for traial_idx in 1:mctrial_num
+            u   = Random.rand(rng)
+            phi = 2.0*π*Random.rand(rng)
+            sin_theta = 1.0 - u^2
+
+            dot = Coordinate(sa_radi*sin_theta*cos(phi),
+                             sa_radi*sin_theta*sin(phi),
+                             sa_radi*u) + sbj_coord
+            overlap = false
+            for coord_idx in neibour_indices
+                dist = norm(dot - coordinates[coord_idx])
+                if dist < radiuses[coord_idx] + solvent_radius
+                    overlap = true
+                    break
+                end
+            end
+            if overlap
+                access_count += 1
+            end
+        end
+        sa_ratio = access_count / mctrial_num
+        sasa     = 4.0*π*sa_radi^2 * sa_ratio
+        push!(sasa_arr, sasa)
+    end
+    sasa_arr
 end

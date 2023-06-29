@@ -9,7 +9,8 @@ export get_frame, get_atom, clip_trajectory, geometric_center_of_mass, center_of
        contact_probability_matrix, contact_probability_matrix_parallel,
        radius_of_gyration,
        atom_mass, residue_mass,
-       distance_pbc, fix_pbc, fix_pbc!, fix_pbc_along_time, move_pbc_center
+       distance_pbc, fix_pbc, fix_pbc!, fix_pbc_along_time, move_pbc_center,
+       sasa
 
 # codes
 include("variables.jl")

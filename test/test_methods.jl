@@ -442,3 +442,9 @@ end
     @test isapprox(Array(first_coord), Array(new_coords[1]), atol = 1e-3)
     @test isapprox([-0.5, 2.0, 2.0],   Array(new_coords[3]), atol = 1e-3)
 end
+
+@testset "sasa" begin
+    pdb      = read_pdb("data/test_position.pdb")
+    radiuses = [3.0f0, 3.0f0, 3.0f0, 3.0f0, 3.0f0]
+    @test_nowarn sasa(pdb.coordinates[:, 1], radiuses)
+end

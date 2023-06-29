@@ -32,6 +32,11 @@ contact_probability_matrix
 fix_pbc
 ```
 
+## Structure analysis
+```@docs
+sasa
+```
+
 ## Utility
 ```@docs
 atom_mass
