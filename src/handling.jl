@@ -981,8 +981,9 @@ function rotate(trj::Trajectory{RealT},
     new_trj     = deepcopy(trj)
     coordinates = new_trj.coordinates
 
-    for coord in coordinates
-        coord = rotate(coord, rotate_x, rotate_y, rotate_z)
+    for idx in eachindex(coordinates)
+        coordinates[idx] = rotate(coordinates[idx],
+                                  rotate_x, rotate_y, rotate_z)
     end
     new_trj
 end
