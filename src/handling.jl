@@ -942,3 +942,47 @@ function sasa(coordinates::Vector{Coordinate{RealT}}, radiuses::Vector{RealT},
     end
     sasa_arr
 end
+
+"""
+    rotate(coordinates::Coordinate,
+           rotate_x::Real, rotate_y::Real, rotate_z::Real
+           )::Vector{Real}
+Rotate particles coordinate around x with rotate_x, y with rotate_y, z with rotate_z. The unit is radian.
+"""
+function rotate(coordinate::Coordinate{RealT},
+    rotate_x::RealT, rotate_y::RealT, rotate_z::RealT,
+    )::Coordinate{RealT} where RealT <: Real
+    x = coordinate.x
+    y = coordinate.y
+    z = coordinate.z
+    sin_x = sin(rotate_x)
+    sin_y = sin(rotate_y)
+    sin_z = sin(rotate_z)
+    cos_x = cos(rotate_x)
+    cos_y = cos(rotate_y)
+    cos_z = cos(rotate_z)
+    new_x = x*cos_z*cos_y + y*(cos_z*sin_y*cos_x - sin_z*cos_x) + z*(cos_z*sin_y*cos_x + sin_z*sin_x)
+    new_y = x*sin_z*cos_y + y*(sin_z*sin_y*sin_x + cos_z*cos_x) + z*(sin_z*sin_y*cos_x - cos_z*sin_x)
+    new_z = -x*sin_y + y*cos_y*sin_x + z*cos_y*cos_x
+
+    Coordinate(new_x, new_y, new_z)
+end
+
+"""
+    rotate(trj::Trajectory{Real},
+           rotate_x::Real, rotate_y::Real, rotate_z::Real
+           )::Trajectory{Real}
+Rotate all particles coordinate in trajectory around x with rotate_x, y with rotate_y, z with rotate_z. The unit is radian.
+"""
+function rotate(trj::Trajectory{RealT},
+    rotate_x::RealT, rotate_y::RealT, rotate_z::RealT
+    )::Trajectory{RealT} where RealT <: Real
+
+    new_trj     = deepcopy(trj)
+    coordinates = new_trj.coordinates
+
+    for coord in coordinates
+        coord = rotate(coord, rotate_x, rotate_y, rotate_z)
+    end
+    new_trj
+end
